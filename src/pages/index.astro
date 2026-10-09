@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Nights from '../components/Nights.astro';
+import Features from '../components/Features.astro';
+import Tour from '../components/Tour.astro';
+import Kitchen from '../components/Kitchen.astro';
+import Gallery from '../components/Gallery.astro';
+import Events from '../components/Events.astro';
+import Visit from '../components/Visit.astro';
+import ReserveBand from '../components/ReserveBand.astro';
+import InstagramStrip from '../components/InstagramStrip.astro';
+import Footer from '../components/Footer.astro';
+import BookingModal from '../components/BookingModal.astro';
+---
+
+{/*
+	Section order follows the reference Home flow (openhousecafe.in):
+	hero + info strip, signature nights (their Story slot), four feature
+	cards (their Multi-Cuisine/Concoctions/Ambience/Vibes slot), the room
+	walked by Tour, kitchen board, gallery, events offer,
+	visit, reservation band, instagram strip, footer. `navigation` in
+	src/data/site.ts links to #nights, #tour, #cuisine and #visit, so every
+	one of those ids has to exist on this page — Nights, Tour, Kitchen and
+	Visit respectively. #instagram is linked from the footer nav.
+*/}
+<Layout>
+	<Nav />
+
+	<main id="main" class="relative z-10">
+		<Hero />
+		<Nights />
+		<Features />
+		<Tour />
+		<Kitchen />
+		<Gallery />
+		<Events />
+		<Visit />
+		<ReserveBand />
+		<InstagramStrip />
+	</main>
+
+	<Footer />
+	<BookingModal />
+</Layout>

@@ -1,0 +1,439 @@
+---
+import { business, contact } from '../data/site';
+
+/**
+ * One class string for every field. Kept here rather than repeated so the
+ * focus ring cannot drift between inputs.
+ *
+ * `focus:` not `focus-visible:` — a text field focused by tap on a phone must
+ * still show it, otherwise the guest has no idea which field the on-screen
+ * keyboard is typing into. The global :focus-visible outline in global.css is
+ * deliberately NOT suppressed: `focus:outline-none` on these fields was
+ * killing it, leaving only a subtle border tint as the focus signal.
+ */
+const field =
+	'w-full rounded-xl border border-canyon-coal bg-canyon-void px-4 py-3 text-base text-canyon-champagne placeholder:text-canyon-smoke/50 focus:border-canyon-amber';
+
+/** The date and time pickers additionally need the dark native chrome. */
+const pickerField = `${field} [color-scheme:dark]`;
+/** No native arrow — the label sits on a chevron drawn below. */
+const selectField = `${field} appearance-none [color-scheme:dark]`;
+---
+
+<!--
+	Native <dialog> gives focus trapping, Esc-to-close, and inert background for
+	free. showModal() is what triggers that; CSS alone would not.
+
+	There is no backend, so a successful submit hands the guest a prefilled
+	WhatsApp message. That is a real booking path, not a dead form.
+
+	The dialog is a flex column capped at the viewport, with the heading pinned
+	and only the body scrolling. On a short screen the close button used to
+	scroll away with the fields, so a guest who wanted out had to scroll back
+	up to find it — or guess a swipe.
+-->
+<dialog
+	id="booking-dialog"
+		class="m-auto flex max-h-[calc(100dvh-2rem)] w-[min(30rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-canyon-coal bg-canyon-ember p-0 text-canyon-champagne backdrop:bg-canyon-void/80 backdrop:backdrop-blur-sm"
+	aria-labelledby="booking-title"
+	aria-describedby="booking-subtitle"
+>
+	<form id="booking-form" method="dialog" class="flex min-h-0 flex-col">
+		<div
+			class="flex shrink-0 items-start justify-between gap-4 border-b border-canyon-coal px-7 pt-6 pb-5 md:px-8 md:pt-7"
+		>
+			<div>
+				<h2 id="booking-title" class="font-display text-support tracking-[-0.02em] text-balance">
+					Book a Table
+				</h2>
+				<p id="booking-subtitle" class="mt-2 text-sm text-canyon-smoke">
+					We'll send this straight to {business.name}.
+				</p>
+			</div>
+			<button
+				type="button"
+				data-close-booking
+				class="-mt-1 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-canyon-smoke transition-colors hover:bg-canyon-coal hover:text-canyon-champagne"
+				aria-label="Close booking form"
+			>
+				<svg
+					class="h-5 w-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.75"
+					stroke-linecap="round"
+					aria-hidden="true"
+				>
+					<path d="M6 6l12 12M18 6L6 18"></path>
+				</svg>
+			</button>
+		</div>
+
+		<div class="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-7 pt-6 pb-7 md:px-8 md:pt-7 md:pb-8">
+			<div>
+				<label for="booking-name" class="mb-2 block text-sm font-medium text-canyon-champagne">
+					Name
+				</label>
+				<input
+					type="text"
+					id="booking-name"
+					name="name"
+					required
+					autocomplete="name"
+					class={field}
+					placeholder="e.g. Ananya Sharma…"
+				/>
+			</div>
+
+			<div>
+				<label for="booking-phone" class="mb-2 block text-sm font-medium text-canyon-champagne">
+					Phone
+				</label>
+				{/*
+					The venue reads this number off the WhatsApp message it is
+					sent in, so a typo here means the booking never reaches anyone.
+					`required` alone accepted "abc" and "99999" — verified in the
+					browser — so the digits are pinned here instead.
+
+					Indian mobiles: 10 digits starting 6-9. The pattern allows an
+					optional +91 and tolerates the spaces and dashes people type,
+					then strips them for the length check via the title below.
+				*/}
+				<input
+					type="tel"
+					id="booking-phone"
+					name="phone"
+					required
+					autocomplete="tel"
+					inputmode="tel"
+					pattern="(\+?91[\s-]?)?[6-9][0-9]{4}[\s-]?[0-9]{5}"
+					minlength={10}
+					maxlength={17}
+					title="Enter a 10-digit mobile number, e.g. 96984 21000"
+					class={field}
+					placeholder="e.g. 96984 21000…"
+					aria-describedby="booking-phone-hint"
+				/>
+				<p id="booking-phone-hint" class="mt-2 text-xs text-canyon-smoke">
+					We only use this to confirm your table.
+				</p>
+			</div>
+
+			<div class="grid gap-5 sm:grid-cols-2">
+				<div>
+					<label for="booking-date" class="mb-2 block text-sm font-medium text-canyon-champagne">
+						Date
+					</label>
+					<input
+						type="date"
+						id="booking-date"
+						name="date"
+						required
+						autocomplete="off"
+						class={pickerField}
+					/>
+				</div>
+				<div>
+					<label for="booking-time" class="mb-2 block text-sm font-medium text-canyon-champagne">
+						Time
+					</label>
+					<input
+						type="time"
+						id="booking-time"
+						name="time"
+						required
+						autocomplete="off"
+						class={pickerField}
+					/>
+				</div>
+			</div>
+
+			<div>
+				<label for="booking-guests" class="mb-2 block text-sm font-medium text-canyon-champagne">
+					Party size
+				</label>
+				{/* 1 is missing deliberately: a single cover has no table to book. */}
+				<div class="relative">
+					<select id="booking-guests" name="guests" class={`${selectField} pr-11`}>
+						<option value="2" selected>2 guests</option>
+						{[3, 4, 5, 6, 7, 8].map((n) => <option value={n}>{n} guests</option>)}
+						<option value="9+">9 or more (we'll call you)</option>
+					</select>
+					<svg
+						class="pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2 text-canyon-smoke"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						aria-hidden="true"
+					>
+						<path d="m6 9 6 6 6-6" />
+					</svg>
+				</div>
+			</div>
+		</div>
+
+		<div class="shrink-0 px-7 pt-5 pb-5 md:px-8">
+			{/*
+				Inline send-failure notice. Replaces the old alert() — a blocked
+				WhatsApp popup keeps the guest's details and explains the fix
+				right here, announced via the alert role instead of a modal
+				dialog that steals focus.
+			*/}
+			<p id="booking-error" role="alert" class="mb-3 hidden text-center text-sm leading-relaxed text-canyon-champagne"></p>
+			<button
+				type="submit"
+				class="w-full rounded-lg bg-canyon-amber px-6 py-4 text-base font-semibold text-canyon-void transition-[background-color,transform,filter] duration-200 hover:brightness-110 active:scale-[0.98]"
+			>
+				Send booking request
+			</button>
+		</div>
+
+		{/*
+			Both numbers, because their own posts print both. Naming one here
+			sends half the guests to a line the venue does not use for bookings.
+
+			Pinned below the submit button rather than scrolled with the fields —
+			the fallback for a blocked popup has to be reachable without hunting.
+		*/}
+		<div class="shrink-0 border-t border-canyon-coal px-7 pt-4 pb-6 text-center md:px-8 md:pb-7">
+			<p class="text-xs text-canyon-smoke">Prefer to talk? Call either line</p>
+			<p class="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
+				<a
+					href={`tel:${contact.resTel}`}
+					class="font-medium text-canyon-amber hover:underline"
+					aria-label={`Call reservations on ${contact.resDisplay}`}
+				>
+					+91 {contact.resDisplay}
+				</a>
+				<a
+					href={`tel:${contact.tel}`}
+					class="font-medium text-canyon-amber hover:underline"
+					aria-label={`Call ${contact.telDisplay}`}
+				>
+					+91 {contact.telDisplay}
+				</a>
+			</p>
+		</div>
+	</form>
+</dialog>
+
+<script>
+	// Frontmatter imports are NOT in scope inside a bundled <script>.
+	import { contact } from '../data/site';
+
+	const dialog = document.getElementById('booking-dialog') as HTMLDialogElement | null;
+	const form = document.getElementById('booking-form') as HTMLFormElement | null;
+	const dateInput = document.getElementById('booking-date') as HTMLInputElement | null;
+
+	/*
+		Focus management.
+
+		Native showModal() already makes everything outside the dialog inert, so
+		Tab cannot escape the page — but it does not *cycle* within the dialog:
+		in several browsers the first Tab still walks out to the browser chrome
+		and back. This closes that loop.
+
+		The listener is held in a module-level variable so it can actually be
+		removed. It was previously an anonymous function on an element that is
+		never torn down, so every open stacked another one — the fourth visit ran
+		four copies of the same handler.
+	*/
+	let lastTrigger: HTMLElement | null = null;
+	let keydownHandler: ((e: KeyboardEvent) => void) | null = null;
+
+	const focusableSelectors =
+		'button, [href], input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])';
+
+	function startFocusTrap(element: HTMLElement) {
+		stopFocusTrap();
+
+		const focusable = [...element.querySelectorAll<HTMLElement>(focusableSelectors)].filter(
+			// offsetParent is null for display:none subtrees; a zero-size
+			// element would be focused and silently swallow the keystroke.
+			(el) => el.offsetWidth > 0 || el.offsetHeight > 0
+		);
+		if (focusable.length === 0) return;
+
+		const first = focusable[0];
+		const last = focusable[focusable.length - 1];
+
+		// The first *field*, not the first focusable: the close button sits
+		// above the fields in the DOM, so focusing index 0 dropped the guest on
+		// the X with no indication which way to go. Skipped on coarse pointers —
+		// focusing a field there pops the on-screen keyboard the moment the
+		// dialog opens. The Tab trap below is still installed either way.
+		const firstField = element.querySelector<HTMLElement>('input, select, textarea') ?? first;
+		if (!window.matchMedia('(pointer: coarse)').matches) {
+			firstField.focus();
+		}
+
+		keydownHandler = (e: KeyboardEvent) => {
+			if (e.key !== 'Tab') return;
+			if (e.shiftKey && document.activeElement === first) {
+				e.preventDefault();
+				last.focus();
+			} else if (!e.shiftKey && document.activeElement === last) {
+				e.preventDefault();
+				first.focus();
+			}
+		};
+
+		element.addEventListener('keydown', keydownHandler);
+	}
+
+	function stopFocusTrap() {
+		if (!keydownHandler || !dialog) return;
+		dialog.removeEventListener('keydown', keydownHandler);
+		keydownHandler = null;
+	}
+
+	/*
+		"Today" has to be the venue's today, not UTC's.
+
+		toISOString() is UTC. Bilaspur is UTC+5:30, so between 00:00 and 05:30
+		IST it returns *yesterday* — a guest opening the form at 1am gets a
+		date field pre-filled a day in the past and can send a request for a
+		date that has already gone. Read the local parts instead.
+	*/
+	const localDay = (): string => {
+		const now = new Date();
+		const mm = String(now.getMonth() + 1).padStart(2, '0');
+		const dd = String(now.getDate()).padStart(2, '0');
+		return `${now.getFullYear()}-${mm}-${dd}`;
+	};
+
+	/*
+		Recomputed on every open, not once at load. A tab left open across
+		midnight would otherwise keep yesterday's date as its floor.
+	*/
+	const setBookableWindow = () => {
+		if (!dateInput) return;
+		const today = localDay();
+		dateInput.min = today;
+		if (!dateInput.value || dateInput.value < today) dateInput.value = today;
+	};
+
+	setBookableWindow();
+
+	document.querySelectorAll<HTMLElement>('[data-open-booking]').forEach((trigger) => {
+		trigger.addEventListener('click', () => {
+			lastTrigger = trigger;
+			setBookableWindow();
+			document.getElementById('booking-error')?.classList.add('hidden');
+			dialog?.showModal();
+			/*
+				Next frame, because startFocusTrap measures focusables to skip
+				zero-size ones, and a dialog that opened this same tick has not
+				been laid out yet.
+
+				Was calling a `trapFocus` that does not exist — a ReferenceError
+				on every open, which killed the Tab loop before it was installed
+				and left focus able to walk out of the dialog into the page.
+			*/
+			setTimeout(() => {
+				if (dialog) startFocusTrap(dialog);
+			}, 0);
+		});
+	});
+
+	document.querySelectorAll<HTMLElement>('[data-close-booking]').forEach((trigger) => {
+		trigger.addEventListener('click', () => {
+			dialog?.close();
+			lastTrigger?.focus();
+		});
+	});
+
+	// Clicking the backdrop closes. The dialog box itself is the target only
+	// when the click lands on it, not on its children.
+	dialog?.addEventListener('click', (event) => {
+		if (event.target === dialog) dialog.close();
+	});
+
+	/*
+		Prettier, since the WhatsApp message is read on a phone by a person.
+		"2026-10-08" is unambiguous to a machine and to nobody else.
+	*/
+	const prettyDate = (iso: string): string => {
+		const [y, m, d] = iso.split('-').map(Number);
+		if (!y || !m || !d) return iso;
+		return new Date(y, m - 1, d).toLocaleDateString('en-IN', {
+			weekday: 'short',
+			day: 'numeric',
+			month: 'short',
+			year: 'numeric',
+		});
+	};
+
+	const prettyTime = (hhmm: string): string => {
+		const [h, m] = hhmm.split(':').map(Number);
+		if (Number.isNaN(h) || Number.isNaN(m)) return hhmm;
+		const period = h >= 12 ? 'PM' : 'AM';
+		const hour12 = h % 12 === 0 ? 12 : h % 12;
+		return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
+	};
+
+	function closeAndRestore() {
+		dialog?.close();
+		lastTrigger?.focus();
+		lastTrigger = null;
+		form?.reset();
+		document.getElementById('booking-error')?.classList.add('hidden');
+		setBookableWindow();
+	}
+
+	form?.addEventListener('submit', (event) => {
+		event.preventDefault();
+		if (!form.reportValidity()) return;
+
+		const data = new FormData(form);
+		const name = String(data.get('name') ?? '').trim();
+		const phone = String(data.get('phone') ?? '').trim();
+		const date = String(data.get('date') ?? '');
+		const time = String(data.get('time') ?? '');
+		const guests = String(data.get('guests') ?? '');
+
+		const message = [
+			'Hi Canyon, I would like to book a table.',
+			'',
+			`Name: ${name}`,
+			`Phone: ${phone}`,
+			`Date: ${prettyDate(date)}`,
+			`Time: ${prettyTime(time)}`,
+			`Party size: ${guests}`,
+		].join('\n');
+
+		const wa = window.open(
+			`https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(message)}`,
+			'_blank',
+			'noopener,noreferrer'
+		);
+
+		/*
+			A blocked popup means the request was never sent. Previously the form
+			was cleared and the dialog closed regardless, so the guest walked away
+			believing a table was held — then an alert() said otherwise. Keep
+			their details and explain the fix inline instead.
+		*/
+		if (!wa) {
+			const error = document.getElementById('booking-error');
+			if (error) {
+				error.textContent =
+					`Your browser blocked the WhatsApp window — nothing was sent. Call +91 ${contact.telDisplay} and we'll book it for you.`;
+				error.classList.remove('hidden');
+			}
+			return;
+		}
+
+		closeAndRestore();
+	});
+
+	// Also restore focus on backdrop click (handled by dialog click event)
+	dialog?.addEventListener('close', () => {
+		if (lastTrigger) {
+			lastTrigger.focus();
+			lastTrigger = null;
+		}
+	});
+</script>

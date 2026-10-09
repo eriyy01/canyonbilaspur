@@ -1,0 +1,48 @@
+---
+interface Props {
+	id?: string;
+	/** Uppercase micro label, set in the shared `.eyebrow` style */
+	eyebrow?: string;
+	heading?: string;
+	lede?: string;
+	class?: string;
+	/** Optional overrides so a section can set its header larger locally */
+	eyebrowClass?: string;
+	headingClass?: string;
+	/** Header alignment: centred on phones, left from md up. Pass 'max-w-2xl' to keep a section left-aligned everywhere. */
+	headerClass?: string;
+}
+
+const {
+	id,
+	eyebrow,
+	heading,
+	lede,
+	class: className = '',
+	eyebrowClass = 'eyebrow',
+	headingClass = 'mt-4 font-display text-title leading-[1.02] tracking-[-0.02em] text-balance text-canyon-champagne',
+	headerClass = 'mx-auto flex w-full max-w-2xl flex-col items-center text-center md:mx-0 md:items-start md:text-left',
+} = Astro.props;
+---
+
+{/*
+	One shared section shell. It uses `.shell` for the gutter and the
+	`text-title` / `text-lede` type tokens rather than hand-picked sizes, so
+	sections wrapped in this component line up with the ones that set their own
+	markup (Nights, Tour, Kitchen, Events). A second gutter width on the same
+	page reads as a mistake even when neither is wrong on its own.
+*/}
+<section id={id} class={`py-20 md:py-28 ${className}`}>
+	<div class="shell">
+		{
+			(eyebrow || heading || lede) && (
+				<div class={headerClass} data-reveal>
+					{eyebrow && <p class={eyebrowClass}>{eyebrow}</p>}
+					{heading && <h2 class={headingClass}>{heading}</h2>}
+					{lede && <p class="mt-6 text-lede text-canyon-champagne/85">{lede}</p>}
+				</div>
+			)
+		}
+		<slot />
+	</div>
+</section>

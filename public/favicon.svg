@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Canyon">
+	<rect width="64" height="64" rx="14" fill="#0b0a0c" />
+	<!-- The venue mark: two palms inside an arch, as used on the venue signage -->
+	<g fill="none" stroke="#e8a33d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M14 48V30a18 18 0 0 1 36 0v18" />
+		<path d="M24 48V32a8 8 0 0 1 16 0v16" opacity="0.55" />
+		<path d="M32 40v8" />
+	</g>
+	<!-- Fronds -->
+	<g fill="none" stroke="#c9922f" stroke-width="2" stroke-linecap="round">
+		<path d="M32 22c-3-3-6-4-8-4M32 22c3-3 6-4 8-4" />
+		<path d="M25 26c-3-1-5-1-7 0M39 26c3-1 5-1 7 0" />
+	</g>
+</svg>

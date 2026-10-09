@@ -1,0 +1,153 @@
+---
+import { Image } from 'astro:assets';
+import { posters, room } from '../data/frames';
+import { nights, contact, cta } from '../data/site';
+
+/*
+	The nights lead with the artwork.
+
+	Live music is the reason people come — it is in 8 of the 12 sampled posts,
+	and the opening Sufi Night outdrew a typical post by roughly twelve times.
+	So this section does what the previous one only described: it shows the
+	three posters Canyon designed, at full fidelity, burnt-in typography and
+	all. Their art is the product. Reproducing it is both more honest and more
+	arresting than a paragraph describing it.
+
+	The "Sufi Night" heading is Cormorant Garamond italic in gold —
+	distinct from the Fraunces display face, soulful but still clean
+	and readable. It appears here and nowhere else.
+*/
+---
+
+<section id="nights" class="shell pt-[30px] pb-0 md:pt-28 md:pb-0">
+	{/* ── Signature: Sufi Night ─────────────────────────────────────── */}
+	<div class="grid items-start gap-8 md:grid-cols-12 md:gap-10">
+		<div class="md:col-span-5" data-reveal>
+			<figure>
+				<div class="overflow-hidden rounded-shell bg-canyon-ember">
+					<Image
+						src={posters.sufi.src}
+						alt={posters.sufi.alt}
+						widths={[420, 640, 900]}
+						sizes="(min-width: 768px) 40vw, 92vw"
+						format="avif"
+						loading="lazy"
+						class={`${posters.sufi.ratio} w-full object-cover`}
+					/>
+				</div>
+			</figure>
+		</div>
+
+		<div class="flex flex-col items-center text-center md:col-span-7 md:items-start md:text-left" data-reveal style="--reveal-delay: 90ms">
+			<h2
+				class="mt-4 w-full font-sufi text-title leading-[0.95] font-medium tracking-[-0.01em] text-balance text-canyon-amber italic"
+				translate="no"
+			>
+				Sufi Night
+			</h2>
+
+			<p class="mx-auto mt-6 max-w-md font-display text-blurb leading-snug text-pretty text-canyon-champagne italic md:mx-0">
+				“{nights[0].blurb}”
+			</p>
+
+		<p class="mx-auto mt-6 max-w-md text-base leading-relaxed text-canyon-champagne/90 md:mx-0">
+				{nights[0].closes} Dates move week to week. Call ahead to catch the next
+				one, tables fill first.
+			</p>
+			{/* [caption] social proof: opening Sufi night drew 1,844 likes vs ~150 typical. */}
+			<p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-canyon-champagne/75 md:mx-0">
+				The opening Sufi night drew 12×
+				<br class="md:hidden" />the usual response.
+				<br class="hidden md:block" />That room fills fast.
+			</p>
+
+			<a
+				href={`tel:${contact.tel}`}
+				class="group mt-6 inline-flex min-h-[3.25rem] items-center gap-3 rounded-lg border border-canyon-amber/50 px-8 text-sm font-semibold text-canyon-amber transition-colors duration-300 hover:border-canyon-amber hover:bg-canyon-amber hover:text-canyon-void"
+			>
+				{cta.nights}
+				<svg
+					class="h-3.5 w-3.5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M5 12h14M13 6l6 6-6 6"></path>
+				</svg>
+			</a>
+		</div>
+	</div>
+
+	{/* ── The other two formats, as posters ─────────────────────────── */}
+	<ul class="mt-16 grid gap-8 md:mt-24 md:grid-cols-2 md:gap-10">
+		{
+			nights.slice(1).map((night, i) => {
+				const art = night.poster === 'bollywood' ? posters.bollywood : posters.strings;
+				return (
+					<li class={`flex flex-col items-center text-center md:items-start md:text-left ${i === 1 ? 'md:mt-14' : ''}`} data-reveal>
+						<figure>
+							<div class="overflow-hidden rounded-shell bg-canyon-ember">
+								<Image
+									src={art.src}
+									alt={art.alt}
+									widths={[420, 640, 900, 1200]}
+									sizes="(min-width: 768px) 44vw, 92vw"
+									format="avif"
+									loading="lazy"
+									class={`${art.ratio} w-full object-cover`}
+								/>
+							</div>
+							{/*
+				Name and one line. No format line: the Bollywood poster already
+				prints "featuring live music" and the Strings poster prints
+				"classy, melodic, effortless", so repeating either one here just
+				says the poster twice. The blurb is kept because it comes from
+				their caption, not from their artwork, and appears on neither.
+			*/}
+							<figcaption class="mt-5">
+								{/*
+									Supporting formats sit below the signature
+									(text-support / text-lede): h3 under the
+									section's h2, kept compact so both longer
+									names set cleanly.
+								*/}
+								<h3 class="font-display text-quote leading-[0.95] text-balance text-canyon-amber" translate="no">
+									{night.name}
+								</h3>
+								<p class="mt-3 max-w-sm font-display text-lede leading-snug text-pretty text-canyon-champagne italic">
+									“{night.blurb}”
+								</p>
+							</figcaption>
+						</figure>
+					</li>
+				);
+			})
+		}
+	</ul>
+
+	{/* ── The room during a night ───────────────────────────────────── */}
+	<div class="mt-16 md:mt-24">
+		<p class="eyebrow text-body">Mid-song, on a weeknight</p>
+		<div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
+			{
+				[room.crowd, room.beams, room.dholak].map((shot, i) => (
+					<figure data-reveal style={`--reveal-delay:${i * 70}ms`} class={i === 2 ? 'col-span-2 md:col-span-1' : undefined}>
+						<Image
+							src={shot.src}
+							alt={shot.alt}
+							widths={[420, 640, 900]}
+							sizes="(min-width: 768px) 32vw, 48vw"
+							format="avif"
+							loading="lazy"
+							class={`w-full rounded-shell bg-canyon-ember object-cover ${shot.ratio}`}
+						/>
+					</figure>
+				))
+			}
+		</div>
+	</div>
+</section>

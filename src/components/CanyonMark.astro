@@ -1,0 +1,48 @@
+---
+/**
+ * The graphic mark, traced from Canyon's own teaser artwork — the
+ * arch-and-palms device from their entrance sign system.
+ *
+ * Contour-traced from source pixels (see temp/fontmatch), not redrawn:
+ * every curve here exists in their art.
+ *
+ * Colour comes from `currentColor` inheritance, never from string surgery
+ * on the markup: the source file keeps `fill="currentColor"` and this
+ * wrapper sets a Tailwind design-token utility (`text-canyon-amber` /
+ * `text-canyon-champagne`) so the ink is always a token and can never
+ * fall back to SVG's default black fill.
+ */
+import markSvg from '../assets/canyon-mark.svg?raw';
+
+const TONES = {
+	amber: 'text-canyon-amber',
+	champagne: 'text-canyon-champagne',
+} as const;
+
+interface Props {
+	class?: string;
+	/** When the mark carries meaning alone, name it; otherwise it hides. */
+	label?: string;
+	/** Design-token ink. Amber = accents, champagne = headings. */
+	tone?: keyof typeof TONES;
+}
+
+const { class: className = '', label, tone = 'amber' } = Astro.props;
+---
+
+<span
+	class={`traced-mark ${TONES[tone]} ${className}`}
+	role={label ? 'img' : undefined}
+	aria-label={label}
+	aria-hidden={label ? undefined : 'true'}
+	set:html={markSvg}
+/>
+<style>
+	/* Sizing for the injected svg lives in global.css: scoped selectors
+	   can't reach set:html nodes (Astro scopes the selector, never the
+	   injected markup), so a scoped `svg` rule would silently never match. */
+	.traced-mark {
+		display: inline-block;
+		line-height: 0;
+	}
+</style>

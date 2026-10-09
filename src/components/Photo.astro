@@ -1,0 +1,110 @@
+---
+import { Image } from 'astro:assets';
+
+/**
+ * A single photograph in the double-bezel shell.
+ *
+ * Astro's <Image> gives responsive srcset, modern format negotiation and
+ * explicit dimensions, so no layout shift and far less weight than the source
+ * JPEGs (which are 1080px-wide, up to 216 KB each).
+ *
+ * There is deliberately no `position` prop. Every plate in this set is a
+ * designed post with Canyon's own typography burnt into it, and this component
+ * exists to make sure none of it gets sliced: the box is always declared at the
+ * plate's own ratio (see src/data/frames.ts), which leaves `object-cover`
+ * nothing to crop. If a frame ever needs to deviate from its native ratio, the
+ * fix is a new box at that ratio — never a nudge to `object-position`, which is
+ * how letters ended up cut in half.
+ *
+ * `arch` changes the outline of the shell, not the box: the frame stays at its
+ * own ratio and the photograph is still whole, it is simply seen through a
+ * round-headed doorway rather than a rounded rectangle. It exists for exactly
+ * one plate — the entrance sign in the hero, which is a photograph of an arch —
+ * and it assumes a 4:5 box (see the note in the style block).
+ */
+interface Props {
+	src: ImageMetadata;
+	alt: string;
+	/** Tailwind aspect utility for the frame. Should match the plate's ratio. */
+	ratio?: string;
+	class?: string;
+	priority?: boolean;
+	/** Intrinsic sizes hint. Only passed where the frame is not a column of the grid — the default covers the gallery. */
+	sizes?: string;
+	/** Draw the shell as a round-headed arch instead of a rounded rectangle. 4:5 plates only. */
+	arch?: boolean;
+	/** Responsive widths. Hero plate maxes at 24rem so defaults overserve it. */
+	widths?: number[];
+}
+
+const {
+	src,
+	alt,
+	ratio = 'aspect-[4/5]',
+	class: className = '',
+	priority = false,
+	sizes = '(min-width: 768px) 45vw, 92vw',
+	arch = false,
+	widths = [420, 640, 900, 1200],
+} = Astro.props;
+---
+
+<figure class={className}>
+	<div
+		class:list={[
+			arch ? 'shell-arch' : 'rounded-shell',
+			'overflow-hidden border border-canyon-coal/70 bg-canyon-void/40 p-1.5',
+		]}
+	>
+		<div
+			class:list={[
+				arch ? 'core-arch' : 'rounded-core',
+				'overflow-hidden bg-canyon-ember',
+				ratio,
+			]}
+		>
+			<Image
+				src={src}
+				alt={alt}
+				widths={widths}
+				sizes={sizes}
+				loading={priority ? 'eager' : 'lazy'}
+				fetchpriority={priority ? 'high' : 'auto'}
+				format="avif"
+				class="h-full w-full object-cover"
+			/>
+		</div>
+	</div>
+</figure>
+
+<style>
+	/*
+		THE ARCH. One rule: a doorway. Top-left and top-right corners are each
+		half the width of their own box horizontally and 40% of its height
+		vertically — on a 4:5 plate those two numbers are the same length, so
+		the corners meet as a true semicircle instead of a flattened ellipse,
+		and the head of the shell is the head of the door.
+
+		Both shells do this, and that is what keeps the bezel honest: the
+		outer box is exactly the padding wider than the inner one, so a 50%/40%
+		arch on each of them describes concentric curves and the 6px band reads
+		as one even line all the way round the head. On any other ratio the two
+		numbers stop being equal, the semicircle becomes an ellipse, and the
+		band wanders — hence "4:5 only".
+
+		The bottom keeps the ordinary radii from the theme, because a door
+		meets the floor square-ish but this site does not: `--radius-shell` and
+		`--radius-core` are what every other plate on the page sits on.
+	*/
+	.shell-arch {
+		border-radius:
+			50% 50% var(--radius-shell) var(--radius-shell) /
+			40% 40% var(--radius-shell) var(--radius-shell);
+	}
+
+	.core-arch {
+		border-radius:
+			50% 50% var(--radius-core) var(--radius-core) /
+			40% 40% var(--radius-core) var(--radius-core);
+	}
+</style>

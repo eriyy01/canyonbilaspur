@@ -1,0 +1,310 @@
+@import 'tailwindcss';
+
+/* Fonts are registered in astro.config.mjs via Astro's `fonts` option.
+   Astro injects the @font-face rules, preload links, and a metric-matched
+   fallback per family, so nothing font-related is imported here. */
+
+@theme {
+	/* ── Surfaces ──────────────────────────────────────────────────────────
+	   Sampled from the venue itself. The entrance wall is a warm ochre
+	   plaster, not black; the ceiling oculus is a deep blue. Those two
+	   colours, not a generic "dark mode amber", are this brand. */
+	--color-canyon-void: #0a0908;
+	--color-canyon-ember: #12100e;
+	--color-canyon-coal: #1f1b16;
+	--color-canyon-smoke: #a79f94;
+
+	/* Text — warm off-white, never pure #fff */
+	--color-canyon-champagne: #f4ede2;
+
+	/* ── Accents ────────────────────────────────────────────────────────── */
+	/* Cove lighting along the ceiling — the signature action colour */
+	--color-canyon-amber: #e0a13c;
+	--color-canyon-gold: #be8a2c;
+	/* The plaster wall by the entrance sign. Used as a surface, never text. */
+	--color-canyon-ochre: #c8912e;
+	/* The galaxy ceiling. Only ever appears behind the oculus photography. */
+	--color-canyon-night: #17233c;
+	--color-canyon-terracotta: #b4553a;
+
+	/* Every transition uses a custom curve. Never linear, never ease-in-out. */
+	--ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+	--ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+
+	/* Concentric radii for the inset bezel around every frame */
+	--radius-shell: 1.5rem;
+	--radius-core: calc(1.5rem - 0.3125rem);
+
+	/*
+		Type scale, deliberately restrained. A venue site is looked at, not
+		read: display type tops out around 4.75rem so photography keeps the
+		screen. Mobile-first minimums are set here so nothing depends on
+		remembering a breakpoint at the call site.
+
+		--text-hero is capped against svh as well as vw: 7vw is comfortable at
+		1440 and overruns a short laptop window, so the min() picks whichever
+		axis is tighter, and svh keeps the size stable when mobile browser
+		chrome collapses. The greeting is two short lines, so it can take a
+		display size the old three-line pillar headline could not.
+	*/
+	--text-hero: clamp(3rem, min(8vw, 10svh), 6rem);
+	--text-title: clamp(2rem, 4.5vw, 3rem);
+	--text-heading: clamp(1.75rem, 4vw, 2.625rem);
+	--text-lede: 1.0625rem;
+	--text-body: 0.9375rem;
+	--text-micro: 0.75rem;
+
+	/*
+		Display exceptions, promoted to tokens because they repeat and carry
+		product meaning — per the Tailwind playbook, governed centrally so a
+		redesign updates all usages together. Each keeps the exact size it
+		had as an arbitrary value; only the name is new.
+
+		--text-sufi: the signature night name in Cormorant italic.
+		Kept at its display size for poster use; on-page the Sufi heading
+		sets at the shared section size with the sufi face.
+		--text-spotlight: the single-product spotlight (Jamun Passion).
+		--text-support: supporting night names and dialog/phone display —
+		one step below the shared section size, holding the previous
+		title measure so supporting copy never competes with a section.
+		--text-quote: the standalone room quote in the gallery.
+		--text-blurb: italic display blurbs and punch lines across sections.
+		--text-action: buttons and nav links (0.8125rem, semibold+tracked).
+	*/
+	--text-sufi: clamp(3.25rem, 7vw, 4.5rem);
+	--text-spotlight: clamp(2.25rem, 4.5vw, 3.25rem);
+	--text-support: clamp(1.625rem, 3.8vw, 2.5rem);
+	--text-quote: clamp(1.375rem, 2.6vw, 1.75rem);
+	--text-blurb: clamp(1.0625rem, 2vw, 1.25rem);
+	--text-action: 0.8125rem;
+}
+
+/*
+	Font families live in @theme inline, not @theme: the values are cssVariables
+	that Astro's <Font /> component defines at runtime. `inline` tells Tailwind
+	to substitute the variable into the utility instead of re-declaring its own
+	--font-* token, which would shadow Astro's value.
+*/
+@theme inline {
+	--font-display: var(--font-canyon-display), ui-serif, Georgia, serif;
+	--font-sans: var(--font-canyon-body), ui-sans-serif, system-ui, sans-serif;
+	/* Soulful high-contrast serif for the "Sufi Night" signature.
+	   Scoped to the nights section. Never used for UI or body copy. */
+	--font-sufi: var(--font-canyon-sufi), var(--font-canyon-display), serif;
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+		/* Offset anchor targets so the fixed nav never covers them */
+		scroll-padding-top: 4.5rem;
+		color-scheme: dark;
+
+		/*
+			Suppress rubber-banding on a fine pointer, where there is nothing to
+			overscroll *to* — no pull-to-refresh, no neighbouring app. Scoped to
+			`pointer: fine` on purpose: on a touch device `none` would also kill
+			pull-to-refresh, and on a hybrid laptop `pointer` describes the mouse,
+			so the coarse-pointer defaults are left intact there.
+		*/
+		@media (pointer: fine) {
+			overscroll-behavior: none;
+		}
+	}
+
+	body {
+		background-color: var(--color-canyon-void);
+		color: var(--color-canyon-champagne);
+		font-family: var(--font-sans);
+		font-size: var(--text-body);
+		line-height: 1.65;
+		-webkit-font-smoothing: antialiased;
+		/* Kill double-tap zoom delay on interactive elements. */
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
+
+		/*
+			A last-resort clip, not the fix. `overflow-x: hidden` turns the
+			element into a scroll container, which is why it silently papered
+			over the ticker overflow instead of exposing it — and iOS Safari
+			still let the page pan. `clip` does not create a scroll container,
+			so the overflow is genuinely unreachable, and it leaves overflow-y
+			touching `visible` (whereas `hidden` would have forced it to `auto`
+			and made <body> the scrollport).
+		*/
+		overflow-x: clip;
+		/*
+			Notch / gesture-bar clearance. Zero on devices without a safe
+			area, so layout is untouched there; with viewport-fit=cover the
+			footer and dialog no longer sit under the home indicator.
+		*/
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+
+	/*
+		The hand cursor, stated once for everything that acts.
+
+		Tailwind v4's preflight gives every <button> `appearance: button`,
+		which resolves the cursor to the default arrow — so without this the
+		Book a Table pill and every other button look like flat type at rest,
+		however much they lift on hover. The affordance belongs here rather
+		than in `cursor-pointer` at forty call sites, and it has to reach
+		anything clickable, not only elements named <button>.
+
+		`:where()` keeps the specificity at zero so a component's own cursor
+		utility still wins where one exists, and on touch devices the whole
+		declaration is inert.
+	*/
+	:where(button, a[href], [role='button'], label[for], summary) {
+		cursor: pointer;
+	}
+
+	/* Visible focus on everything interactive — never remove this */
+	:focus-visible {
+		outline: 2px solid var(--color-canyon-amber);
+		outline-offset: 3px;
+		border-radius: 2px;
+	}
+
+	::selection {
+		background-color: var(--color-canyon-amber);
+		color: var(--color-canyon-void);
+	}
+
+	/* Warm bleed from the top of the page, and a matching floor glow.
+	   Fixed and non-interactive so it never repaints on scroll. */
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		z-index: 0;
+		background:
+			radial-gradient(70rem 45rem at 12% -8%, color-mix(in oklab, var(--color-canyon-ochre) 11%, transparent), transparent),
+			radial-gradient(55rem 40rem at 92% 4%, color-mix(in oklab, var(--color-canyon-night) 30%, transparent), transparent);
+	}
+
+	/*
+		Film grain. Sits above content but below interactive layers, is
+		non-interactive, and is purely decorative.
+	*/
+	body::after {
+		content: '';
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		/*
+			Above page content (main runs at z-10) but below the header (z-50);
+			dialogs render in the top layer above all of it. Non-interactive,
+			so hit-testing is unaffected — purely decorative.
+		*/
+		z-index: 40;
+		opacity: 0.03;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+	}
+}
+
+@layer components {
+	/* ── Page frame ──────────────────────────────────────────────────────
+	   One shared gutter for the whole site so vertical rhythm survives. */
+	.shell {
+		margin-inline: auto;
+		width: 100%;
+		max-width: 78rem;
+		padding-inline: 1.5rem;
+	}
+
+	@media (width >= 48rem) {
+		.shell {
+			padding-inline: 2.5rem;
+		}
+	}
+
+	/*
+		Traced brand artwork (CanyonMark) is injected at
+		runtime via set:html, so no scoped component <style> can size it —
+		Astro adds its scope attribute to the selector but never to the
+		injected nodes, and an unsized svg collapses. One global rule owns
+		the sizing instead; wrappers carry their own width utilities.
+	*/
+	.traced-mark svg,
+	.traced-script svg {
+		display: block;
+		width: 100%;
+		height: auto;
+		/*
+			The brand artwork is thin monoline curves. The default
+			`shape-rendering: auto` lets the renderer trade quality for
+			speed on small shapes, which left the script edges looking
+			rough; geometricPrecision keeps full anti-aliasing so the
+			strokes read clean at header sizes.
+		*/
+		shape-rendering: geometricPrecision;
+	}
+
+	/* Uppercase micro label. Clay on paper, softly tracked — a whisper, not a shout. */
+	.eyebrow {
+		font-family: var(--font-sans);
+		font-size: var(--text-micro);
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-canyon-amber);
+	}
+
+	/* Scroll-reveal. Opacity only, no travel, no stagger — one quiet
+	   fade per element. Anything more read as template animation. Opt in
+	   via data-reveal; scoped to .js so content is NEVER hidden when
+	   scripting is unavailable. */
+	.js [data-reveal] {
+		opacity: 0;
+		transition: opacity 300ms var(--ease-out-soft);
+		/* Stagger comes from the inline --reveal-delay each section sets;
+		   unitless 0 would be invalid here, so the fallback carries its own. */
+		transition-delay: var(--reveal-delay, 0ms);
+	}
+
+	.js [data-reveal='in'] {
+		opacity: 1;
+	}
+}
+
+/*
+	A closed <dialog> has to stay hidden, and on its own it does not.
+
+	The booking dialog is laid out with `flex`, and an author declaration beats
+	the user-agent sheet no matter how specific the UA rule is — so
+	`dialog:not([open]) { display: none }` was being outranked by the utility
+	and the entire booking form rendered inline, under the footer, on every
+	page load. Tailwind's utilities live in the `utilities` layer, and unlayered
+	styles outrank every layer, so this one declaration has to sit outside
+	@layer to win.
+
+	No alternative worth taking: `[&:not([open])]:hidden` on the element would
+	need the same fight one layer up, and `open` cannot be pre-set because
+	showModal() throws on a dialog that already has it.
+*/
+dialog:not([open]) {
+	display: none;
+}
+
+/* Users who ask for less motion get none of it. */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	.js [data-reveal] {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

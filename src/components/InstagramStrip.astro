@@ -1,0 +1,53 @@
+---
+import Photo from './Photo.astro';
+import { instagram } from '../data/frames';
+import { business } from '../data/site';
+
+/*
+	The reference closes its pitch with an Instagram block — eyebrow,
+	handle, four photographs — after the reservation band. Same slot here:
+	it used to be one line at the tail of the gallery, which buried the
+	only off-site path on the page under six photographs.
+
+	Three plates because three are what is left: the gallery rule (every
+	frame shown exactly once) left these three unspoken-for — see the
+	`instagram` export in src/data/frames.ts. Bare photographs, no labels:
+	the gallery labels places; a social strip is browsed, not read.
+*/
+
+const strip = [instagram.almost, instagram.jamunAlt, instagram.rain] as const;
+---
+
+<section id="instagram" aria-labelledby="instagram-heading" class="pt-10 pb-20 md:pt-12 md:pb-28">
+	<div class="shell">
+		<div class="mx-auto flex max-w-2xl flex-col items-center text-center" data-reveal>
+			<p class="eyebrow text-body">Instagram</p>
+			<h2 id="instagram-heading" class="mt-4 font-display text-heading leading-[1.02] tracking-[-0.02em] text-balance">
+				<a
+					href={business.instagramUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-canyon-champagne transition-colors duration-300 hover:text-canyon-amber"
+				>
+					<span translate="no">@{business.instagram}</span>
+				</a>
+			</h2>
+		</div>
+
+		<ul class="mt-20 grid grid-cols-1 items-start gap-4 sm:grid-cols-3 md:mt-28 md:gap-5">
+			{
+				strip.map((frame, i) => (
+					<li data-reveal style={`--reveal-delay:${i * 70}ms`}>
+						<Photo
+							src={frame.src}
+							alt={frame.alt}
+							ratio={frame.ratio}
+							widths={[400, 640, 900]}
+							sizes="(min-width: 640px) 30vw, 92vw"
+						/>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>

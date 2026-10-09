@@ -1,0 +1,97 @@
+---
+import { Image } from 'astro:assets';
+import { tour } from '../data/frames';
+import { tourHeading, tourSteps } from '../data/site';
+
+/*
+	The tour is their post.
+
+	Dd1U59dmiXl is a four-frame walk through Canyon, captioned "A little tour of
+	Canyon / from the first step in to the last view of the night / come see it
+	for yourself." The frames run enter → look up → rooftop → sit down; the
+	site follows that exact sequence and that exact order, minus its first
+	frame — "this is how you enter Canyon." is the hero of the page now, so the
+	walk picks up under the oculus and runs to the last view of the night.
+	Three frames, in their order, renumbered 01–03.
+
+	Each frame is shown whole at its native 4:5, so the headline Canyon printed
+	on it — "this is what you see.", "this is what you explore.", "this is
+	where you sit." — is legible and is the headline. Nothing restates it
+	underneath: the earlier build added its own "How you enter" beneath a
+	photograph that already said "this is how you enter Canyon", which is the
+	same sentence twice, and it was only visible at all because the frame had
+	been cropped to hide the original.
+
+	Opposite each frame there is the step number and one line of their own copy
+	(`tourSteps` in src/data/site.ts) — the place you are standing, and a line
+	Canyon has actually published about something in that frame. It is their
+	voice and it is sourced; nothing here is written to fill the column. The
+	photographs still carry the headline, and still nothing under them.
+*/
+---
+
+<section id="tour" class="py-6 md:py-8">
+	<div class="shell">
+		<div class="grid gap-6 md:grid-cols-12 md:items-end md:gap-10">
+			<div class="flex flex-col items-center text-center md:col-span-7 md:items-start md:text-left" data-reveal>
+				<p class="eyebrow text-body">{tourHeading.eyebrow}</p>
+				<h2
+					class="mx-auto mt-4 w-full max-w-2xl font-display text-heading leading-[1.02] tracking-[-0.02em] text-balance text-canyon-champagne md:mx-0"
+				>
+					{tourHeading.title}
+				</h2>
+			</div>
+		</div>
+
+		{/*
+			Phone: stacked, frame over its words, both centred. Desktop: the
+			three frames run one horizontal line, words under each frame.
+		*/}
+		<ol class="mt-12 space-y-10 md:mt-16 md:grid md:grid-cols-3 md:items-start md:gap-8 md:space-y-0">
+			{
+				tour.map((stop) => {
+					return (
+						<li
+							class="flex flex-col items-center text-center md:items-start md:text-left"
+							data-reveal
+						>
+							<figure class="w-full">
+								<Image
+									src={stop.src}
+									alt={stop.alt}
+									widths={[400, 640, 860]}
+									sizes="(min-width: 768px) 28vw, 92vw"
+									format="avif"
+									loading="lazy"
+									class={`w-full rounded-shell bg-canyon-ember object-cover ${stop.ratio}`}
+								/>
+							</figure>
+
+							{/*
+								The place you are standing, and one line of
+								Canyon's own copy about that frame. `place`
+								names the part of the room, because "this is
+								what you see" is the ceiling plate's own headline and
+								says nothing about which ceiling; `line` is theirs,
+								quoted from their caption or their artwork, never
+								written here.
+
+								No `data-reveal` on this element — the <li> already
+								reveals, and a second transition nested inside it just
+								animates the same pixels twice.
+							*/}
+							<div class="mt-4 flex flex-col items-center text-center md:mt-5 md:items-start md:text-left">
+								<p class="eyebrow">{tourSteps[stop.key].place}</p>
+								<p
+									class="mx-auto mt-2.5 max-w-sm font-display text-lede leading-snug tracking-[-0.01em] text-pretty text-canyon-champagne md:mx-0"
+								>
+									{tourSteps[stop.key].line}
+								</p>
+							</div>
+						</li>
+					);
+				})
+			}
+		</ol>
+	</div>
+</section>

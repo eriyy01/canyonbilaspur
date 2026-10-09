@@ -1,0 +1,159 @@
+---
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { business, contact } from '../data/site';
+
+interface Props {
+	title?: string;
+	description?: string;
+	/** Absolute production URL for canonical + og tags. Set when domain is known. */
+	canonicalUrl?: string;
+}
+
+const {
+	title = `${business.name} | ${business.tagline}`,
+	description = business.shortDescription,
+	canonicalUrl,
+} = Astro.props;
+
+/* og:image is a real plate — the entrance sign, also the hero — copied to
+   public/og.jpg so scrapers get a stable absolute path without Astro's
+   hashed _astro URL. Replace with a 1200x630 crop when photography allows. */
+const ogImage = canonicalUrl ? new URL('/og.jpg', canonicalUrl).href : '/og.jpg';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+
+		{/*
+			Emits the @font-face rules, preload links, and the metric-matched
+			fallback fonts for each family declared in astro.config.mjs.
+			Without these the font files are downloaded but never applied.
+		*/}
+		<Font cssVariable="--font-canyon-display" preload />
+		<Font cssVariable="--font-canyon-body" preload />
+		{/*
+			No preload: Cormorant renders one heading in #nights,
+			below the fold. Preloading it would tax the critical path for
+			a face most first paints never reach.
+		*/}
+		<Font cssVariable="--font-canyon-sufi" />
+
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={business.fullName} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		{canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:alt" content="The lit Canyon script sign inside a rounded arch, on a warm plaster wall" />
+		<meta property="og:image:type" content="image/jpeg" />
+		<meta property="og:image:width" content="1080" />
+		<meta property="og:image:height" content="1351" />
+		<meta property="og:locale" content="en_IN" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image:alt" content="The lit Canyon script sign inside a rounded arch, on a warm plaster wall" />
+
+		{/*
+			Restaurant schema. No hours, no geo, no price range — closing time
+			was never published, so all three are omitted rather than invented.
+			Update servesCuisine when the menu is verified.
+		*/}
+		<script type="application/ld+json" set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'Restaurant',
+			name: business.fullName,
+			slogan: business.tagline,
+			servesCuisine: ['Italian', 'Asian', 'Grill'],
+			telephone: `+${contact.tel}`,
+			acceptsReservations: true,
+			address: {
+				'@type': 'PostalAddress',
+				streetAddress: business.address.line1,
+				addressLocality: 'Bilaspur',
+				addressCountry: 'IN',
+			},
+			hasMap: contact.mapsUrl,
+			sameAs: [business.instagramUrl],
+		})} />
+
+		<link rel="preconnect" href="https://www.instagram.com" />
+		<link rel="preconnect" href="https://www.google.com" />
+		<link rel="preconnect" href="https://maps.google.com" />
+		<meta name="theme-color" content="#0a0908" />
+
+		<!--
+			Runs before paint, so scroll-reveal elements are only ever hidden
+			when scripting is genuinely available.
+		-->
+		<script is:inline>
+			document.documentElement.classList.add('js');
+		</script>
+	</head>
+	<body class="relative min-h-screen antialiased">
+		<a
+			href="#main"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:bg-canyon-amber focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-canyon-void"
+		>
+			Skip to content
+		</a>
+
+		<slot />
+
+		<script>
+			// Scroll reveal. One observer for the whole page, using data attributes.
+			const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+			if (reduced) {
+				document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+					el.dataset.reveal = 'in';
+				});
+			} else {
+				const observer = new IntersectionObserver(
+					(entries) => {
+						for (const entry of entries) {
+							if (entry.isIntersecting) {
+								entry.target.setAttribute('data-reveal', 'in');
+								observer.unobserve(entry.target);
+							}
+						}
+					},
+					{ rootMargin: '0px 0px -12% 0px', threshold: 0.05 }
+				);
+
+				/*
+					Anything already in view — or already scrolled past when the
+					browser restores a mid-page position on reload — reveals at
+					once instead of waiting for an intersection that never comes.
+				*/
+				const place = (el: HTMLElement) => {
+					if (el.getBoundingClientRect().top < window.innerHeight) {
+						el.dataset.reveal = 'in';
+					} else {
+						observer.observe(el);
+					}
+				};
+
+				document.querySelectorAll<HTMLElement>('[data-reveal]').forEach(place);
+				// Second pass once images and fonts settle, in case layout
+				// moved anything across the fold line in the meantime.
+				window.addEventListener('load', () => {
+					document
+						.querySelectorAll<HTMLElement>('[data-reveal]:not([data-reveal="in"])')
+						.forEach(place);
+				});
+			}
+		</script>
+	</body>
+</html>

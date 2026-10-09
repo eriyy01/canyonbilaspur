@@ -1,0 +1,263 @@
+---
+import { navigation, business } from '../data/site';
+import { Image } from 'astro:assets';
+import CanyonMark from './CanyonMark.astro';
+import canyonLogo from '../assets/canyon-logo-gold.png';
+---
+
+{/*
+	Non-sticky bar — it scrolls away with the page, so there is no scrim
+	and no scroll fill. Same ground as the hero panel (see the style
+	block): ember with the identical ochre glow, so the two read as one
+	surface. On desktop the header overlays the panel transparently
+	instead — the hero shows through, which matches pixel-exactly. On
+	phones it sits in normal flow with 4px of hero padding below it;
+	on desktop the hero's own padding clears the overlay, which keeps
+	the greeting vertically centred in the opening viewport.
+*/}
+<header
+	id="site-header"
+	class="relative z-50 lg:absolute lg:inset-x-0 lg:top-0"
+>
+	<div class="shell relative">
+		<nav class="flex items-center justify-between gap-4 py-3.5" aria-label="Main">
+			<a
+				href="#top"
+				class="group brand-lockup flex items-center gap-2.5 text-canyon-champagne"
+				aria-label={`${business.name} — back to top`}
+			>
+				<CanyonMark class="w-9 shrink-0" tone="amber" />
+				{/* Optical alignment: the script's visual mass sits high in its
+				box, so it rides ~3px above the mark's centre. Nudged down with
+				a transform, which never moves the mark itself. */}
+				<Image
+					src={canyonLogo}
+					alt=""
+					width={224}
+					densities={[1, 2]}
+					class="h-auto w-28 shrink-0 translate-y-[5px]"
+					aria-hidden="true"
+				/>
+			</a>
+
+			<ul class="hidden items-center gap-8 md:flex">
+				{
+					navigation.map((item) => (
+						<li>
+							<a
+								href={item.href}
+								class="relative py-1 text-action font-semibold tracking-[0.14em] text-canyon-champagne/80 uppercase transition-colors duration-300 hover:text-canyon-champagne"
+							>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+
+			<div class="hidden items-center gap-3 md:flex">
+				<button
+					type="button"
+					data-open-booking
+					class="min-h-[2.75rem] rounded-md bg-canyon-amber px-6 text-action font-bold tracking-[0.02em] text-canyon-void transition-[filter] duration-300 hover:brightness-110"
+				>
+					Book a Table
+				</button>
+			</div>
+
+			<button
+				type="button"
+				id="menu-toggle"
+				class="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-canyon-champagne transition-colors hover:bg-canyon-champagne/10 md:hidden"
+				aria-expanded="false"
+				aria-controls="mobile-menu"
+				aria-label="Open menu"
+			>
+				<svg
+					class="h-5 w-5"
+					id="icon-open"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					aria-hidden="true"
+				>
+					<path d="M3 6h18M3 12h18M3 18h18"></path>
+				</svg>
+				<svg
+					class="hidden h-5 w-5"
+					id="icon-close"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					aria-hidden="true"
+				>
+					<path d="M6 6l12 12M18 6L6 18"></path>
+				</svg>
+			</button>
+		</nav>
+	</div>
+
+	{/* Drawer sits outside the shell so it can bleed full width. Transparent
+		so the header's own hero ground (ember + glow) shows through. */}
+	<div
+		id="mobile-menu"
+		hidden
+		class="relative overscroll-contain border-t border-canyon-coal md:hidden"
+	>
+		<div class="shell py-6">
+			{/*
+				A named landmark. This drawer repeats the header's four links, so
+				without a label a screen reader announces two identical anonymous
+				lists and there is no way to tell which is which. "Mobile" pairs
+				with the header's "Main" to name them apart.
+			*/}
+			<nav aria-label="Mobile">
+				<ul>
+					{
+						navigation.map((item) => (
+							<li class="border-b border-canyon-coal/70 last:border-0">
+								<a
+									href={item.href}
+									class="flex items-baseline justify-between py-3.5 font-display text-2xl tracking-[-0.02em] text-canyon-champagne"
+								>
+									{item.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+
+			{/*
+				Booking and telephone sit outside the nav above: they are actions,
+				not sections, and burying CTAs inside a navigation landmark makes a
+				screen reader announce them as if they were destinations.
+			*/}
+			<div class="mt-6 grid gap-2.5">
+				<button
+					type="button"
+					data-open-booking
+					class="min-h-[3rem] rounded-md bg-canyon-amber text-body font-semibold text-canyon-void transition-[filter] duration-300 hover:brightness-110"
+				>
+					Book a Table
+				</button>
+			</div>
+		</div>
+	</div>
+</header>
+
+<style>
+	/*
+		One glow over the whole lockup, not per piece: mark and wordmark
+		read as a single lit sign — matched the way the real entrance
+		sign reads, tubes and lettering in one warm light. Kept soft and
+		close on purpose: the script strokes are thin, and a heavy halo
+		blurs their edges so the wordmark reads muddy instead of clean.
+		Tinted gold to match the lockup ink. This still lifts the lockup
+		off the dark bar without smearing it.
+	*/
+	.brand-lockup {
+		filter: drop-shadow(0 0 5px rgba(224, 161, 60, 0.3));
+	}
+
+	/*
+		The hero's own ground, restated: ember with the identical ochre
+		glow (same shape, same anchor, same 16% mix — see .hero-panel in
+		Hero.astro), so the in-flow phone header melts into the panel
+		beneath it instead of stepping from flat colour to glow.
+		Desktop overlays transparently — the panel itself shows through.
+	*/
+	#site-header {
+		background-color: var(--color-canyon-ember);
+		background-image: radial-gradient(
+			70rem 45rem at 78% 18%,
+			color-mix(in oklab, var(--color-canyon-ochre) 16%, transparent),
+			transparent 62%
+		);
+	}
+
+	@media (width >= 64rem) {
+		#site-header {
+			background-color: transparent;
+			background-image: none;
+		}
+	}</style>
+
+<script>
+	const toggle = document.getElementById('menu-toggle');
+	const menu = document.getElementById('mobile-menu');
+	const iconOpen = document.getElementById('icon-open');
+	const iconClose = document.getElementById('icon-close');
+
+	// Focus trap for mobile menu
+	const focusableSelectors = 'a, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+	let lastMenuTrigger: HTMLElement | null = null;
+	// Held module-level so it can be removed. Previously an anonymous listener
+	// was added on every open and never torn down — the Nth visit ran N copies.
+	let menuKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+
+	function trapFocusInMenu() {
+		if (!menu) return;
+		if (menuKeyHandler) menu.removeEventListener('keydown', menuKeyHandler);
+		const focusableElements = menu.querySelectorAll<HTMLElement>(focusableSelectors);
+		const firstElement = focusableElements[0];
+		const lastElement = focusableElements[focusableElements.length - 1];
+
+		firstElement?.focus();
+
+		menuKeyHandler = (e: KeyboardEvent) => {
+			if (e.key !== 'Tab') return;
+
+			if (e.shiftKey) {
+				if (document.activeElement === firstElement) {
+					e.preventDefault();
+					lastElement?.focus();
+				}
+			} else {
+				if (document.activeElement === lastElement) {
+					e.preventDefault();
+					firstElement?.focus();
+				}
+			}
+		};
+		menu.addEventListener('keydown', menuKeyHandler);
+	}
+
+	function setMenu(open: boolean) {
+		if (!toggle || !menu) return;
+		toggle.setAttribute('aria-expanded', String(open));
+		toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+		iconOpen?.classList.toggle('hidden', open);
+		iconClose?.classList.toggle('hidden', !open);
+		document.body.style.overflow = open ? 'hidden' : '';
+
+		if (open) {
+			lastMenuTrigger = toggle;
+			menu.hidden = false;
+			trapFocusInMenu();
+		} else {
+			menu.hidden = true;
+			lastMenuTrigger?.focus();
+			lastMenuTrigger = null;
+		}
+	}
+
+	toggle?.addEventListener('click', () => {
+		setMenu(toggle.getAttribute('aria-expanded') !== 'true');
+	});
+
+	menu?.addEventListener('click', (event) => {
+		if ((event.target as HTMLElement).closest('a, [data-open-booking]')) setMenu(false);
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+			setMenu(false);
+			toggle.focus();
+		}
+	});
+</script>

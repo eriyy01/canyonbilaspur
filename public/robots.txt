@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Launch task: once the production domain is known, add
+#   Sitemap: https://<domain>/sitemap.xml
+# and ship a sitemap with the single absolute URL. Both need the domain,
+# so neither is invented here.

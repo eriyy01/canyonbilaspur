@@ -1,0 +1,75 @@
+---
+import Section from './Section.astro';
+import Photo from './Photo.astro';
+import { gallery, posters } from '../data/frames';
+
+/**
+ * The gallery is the honest centre of this site: these are the venue's real
+ * photographs, used with their art direction intact.
+ *
+ * Two rules, both learned the hard way.
+ *
+ * One — no repeated headlines. Every frame here is a designed post with its
+ * own headline burnt in. The earlier build printed a second headline
+ * underneath each one, so the page said "this is what you see." twice per
+ * photograph. Where the photograph carries the words, the page does not
+ * repeat them; the `alt` text carries them for anyone not seeing the image.
+ * What each frame does get is one small place-label — "On stage", "The
+ * floor" — the part of the room you are looking at, which a photograph of a
+ * ceiling cannot say about itself. Same job as `place` in the tour.
+ *
+ * Two — no reuse. Nights, Tour, Kitchen and Events already show their
+ * strongest frames. This section uses only plates that are not spoken for, so
+ * scrolling further actually shows you more of the venue rather than the same
+ * photograph a second time under new words.
+ *
+ * Faces of identifiable guests appear in several frames. Before launch the
+ * business should either confirm the guests were happy to be photographed and
+ * shown commercially, or supply blurred / alternative crops.
+ */
+
+/* Spans are per-item, not cycled. The two 9:16 reels take the narrow columns —
+   at five columns a stage and a galaxy ceiling are the right height, at twelve
+   they are a wall — and they sit at opposite ends of the bento so the eye
+   never lands on two reels in a row. The 4:5 plates alternate around them,
+   with no frame resized to fit an arrangement. */
+const layout = [
+	{ frame: gallery.sufiStage, span: 'md:col-span-5', label: 'On stage' },
+	{ frame: posters.stringsAlt, span: 'md:col-span-7', label: 'The invite' },
+	{ frame: gallery.friends, span: 'md:col-span-5', label: 'The crowd' },
+	{ frame: gallery.palms, span: 'md:col-span-7', label: 'Golden hour' },
+	{ frame: gallery.sky, span: 'md:col-span-7', label: 'Last light' },
+	{ frame: gallery.oculus, span: 'md:col-span-5', label: 'The ceiling' },
+] as const;
+---
+
+<Section
+	id="gallery"
+	eyebrow="The Room"
+	heading="This is the room."
+	lede="Real photographs from the venue, not stock. Every night is a little different."
+	eyebrowClass="eyebrow text-body"
+	headingClass="mt-4 max-w-2xl font-display text-heading leading-[1.02] tracking-[-0.02em] text-balance text-canyon-champagne"
+>
+	<ul class="mt-14 grid grid-cols-1 items-start gap-6 md:mt-20 md:grid-cols-12">
+		{
+			layout.map(({ frame, span, label }, i) => (
+				<li class={span} data-reveal style={`--reveal-delay:${i * 70}ms`}>
+					<Photo src={frame.src} alt={frame.alt} ratio={frame.ratio} />
+					<p class="mt-3 text-center text-sm tracking-wide text-canyon-champagne/85 md:text-left">{label}</p>
+				</li>
+			))
+		}
+	</ul>
+
+	{/*
+		No eyebrow here, no card — one of their own lines set large, left
+		alone. Every other section opens with a micro label; this deliberate
+		gap in the cadence is what keeps the page from reading as a template.
+	*/}
+	<blockquote class="mt-16 text-center md:mt-20 md:text-left" data-reveal>
+		<p class="max-w-3xl font-display text-quote leading-[1.15] tracking-[-0.02em] text-balance text-canyon-champagne/90 italic">
+			“After the rain, Canyon just hits different.”
+		</p>
+	</blockquote>
+</Section>

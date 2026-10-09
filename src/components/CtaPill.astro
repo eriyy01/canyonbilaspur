@@ -1,0 +1,40 @@
+---
+/**
+ * The booking button, in one place.
+ *
+ * Two treatments, one hook (`data-open-booking`):
+ * - `pill` (default): the amber button, used in the
+ *   footer and reserve band.
+ * - `simple`: a flat rectangular button with no icon and no lift — just a
+ *   colour change on hover. Used in the hero, where the headline and
+ *   photograph already carry the visual weight.
+ * Size stays at min-h 3rem (48px, comfortably above the 44px floor).
+ */
+interface Props {
+	label: string;
+	class?: string;
+	variant?: 'pill' | 'simple';
+}
+
+const { label, class: className = '', variant = 'pill' } = Astro.props;
+---
+
+{
+	variant === 'simple' ? (
+		<button
+			type="button"
+			data-open-booking
+			class={`inline-flex min-h-[3rem] items-center justify-center rounded-md bg-canyon-amber px-8 text-action font-bold tracking-[0.12em] text-canyon-void uppercase transition-[filter] duration-300 hover:brightness-110 ${className}`}
+		>
+			{label}
+		</button>
+	) : (
+		<button
+			type="button"
+			data-open-booking
+			class={`inline-flex min-h-[3rem] items-center justify-center rounded-lg bg-canyon-amber px-8 text-sm font-semibold text-canyon-void transition-[filter] duration-300 hover:brightness-110 active:brightness-95 ${className}`}
+		>
+			{label}
+		</button>
+	)
+}

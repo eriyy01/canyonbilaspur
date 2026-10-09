@@ -1,0 +1,495 @@
+---
+import Photo from './Photo.astro';
+import CtaPill from './CtaPill.astro';
+import { hero } from '../data/frames';
+import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../data/site';
+
+/*
+	The cover, rebuilt as a panel with a doorway in it.
+
+	STRUCTURE comes from https://openhousecafe.in/ — a two-column typographic
+	panel (headline, lede, one CTA left; photograph floating right), the
+	photograph overhanging the panel's edge, and a three-slot info strip
+	beneath it. SKIN comes from this project: canyon-ember ground, Fraunces on
+	the --text-hero clamp, the amber pill this site already uses everywhere,
+	the double-bezel shell every other photograph already sits in.
+
+	THE DOORWAY is the one place this stops being a rectangle. The plate is
+	the entrance sign — a photograph of an arch — and Photo.astro draws its
+	shell as an arch to match it, so the frame and its treatment are the same
+	idea: you are looking at the doorway, through a doorway. The box underneath
+	is unchanged: 4:5, the plate's own ratio, so `cover` still removes nothing
+	and the burnt-in caption along the bottom stays whole.
+
+	What is NOT here any more: the full-bleed background, the two scrims, the
+	svh budget arithmetic, and the fact rail. All four existed to solve one
+	problem — an overlaying headline could not be allowed to collide with the
+	burnt-in caption on the plate. Nothing overlays the photograph now, so the
+	problem is gone and so is the machinery.
+
+	THE OVERHANG is one negative margin, not absolute positioning: at lg the
+	plate carries `margin-bottom: -6.5rem`, which shortens its own grid row by
+	exactly that much (a grid item is centred on its margin box, so the box
+	ends up that far past the row). The grid keeps 2.5rem of bottom padding
+	so the panel reads a little longer, leaving a net 4rem overhang past the
+	panel. The strip below reserves 7rem of padding-top to stand clear of
+	it. Below lg the plate is in normal flow, so the overhang is switched off.
+
+	BREAKPOINTS: two columns only from lg up. At md the shell is ~688px wide
+	and a 20rem plate leaves the lede 288px — about seven lines of 17px type,
+	which is not a column, it is a gutter. Stacked until then, centred, the way
+	the reference stacks its own.
+
+	Verified by arithmetic, not by screenshot: no browser pass was run, per
+	AGENTS.md.
+*/
+---
+
+<section id="top">
+	<div class="hero-panel">
+		<div class="shell hero-grid">
+			<div class="hero-copy" data-reveal>
+		{/* Phone: the whole greeting on one line (see .hero-title). Desktop:
+			the two spans stack (see the lg block) back into the original
+			"Welcome to" / "Canyon!" break. */}
+			<h1 class="hero-title">
+				<span class="hero-line">{heroGreeting.line1}</span> <span class="hero-line">{heroGreeting.line2}</span>
+			</h1>
+
+				{/* [bio] verbatim, then facts assembled from this file — see site.ts. */}
+				<p class="hero-lede mt-3 max-w-[34rem] text-pretty text-canyon-champagne/85 lg:mt-5">
+					{heroLede.line1}<br />{heroLede.line2}
+				</p>
+
+				{/*
+					One action: the telephone number has left the hero because it is now
+					the third slot of the strip directly beneath this.
+				*/}
+				<CtaPill label={cta.hero} variant="simple" class="mt-6 lg:mt-8" />
+			</div>
+
+			{/*
+				The doorway. The entrance sign, whole at its own 4:5, in the
+				double bezel every other photograph on the site uses — outlined
+				as an arch to answer the arch in the photograph itself.
+				`priority` because this is the LCP candidate; `sizes` because the
+				frame is one grid column wide, not the full-width gallery frame
+				Photo.astro's default assumes.
+			*/}
+			<div class="hero-plate" data-reveal style="--reveal-delay: 120ms">
+				<Photo
+					src={hero.src}
+					alt={hero.alt}
+					ratio={hero.ratio}
+					arch
+					priority
+			widths={[320, 480, 640, 800, 960]}
+			sizes="(min-width: 64rem) 21rem, min(84vw, 18rem)"
+				/>
+			</div>
+		</div>
+	</div>
+
+	{/*
+		The strip. A <ul>, not headings and not a <dl>: these are
+		label/value pairs, and a heading here would either skip from h1
+		to h3 or push three h2s onto the front of the page before the
+		Nights section has had its say. A <dl> would want dt/dd as
+		direct children of each wrapper; the icon + stacked text layout
+		does not give it that, so a plain list with labelled text keeps
+		the markup valid.
+
+		The middle slot is "The Nights", not "Open Hours" — closing time has
+		never been published, and DESIGN.md §8 refuses to invent it. The slot
+		carries the time-fact Canyon does publish instead.
+	*/}
+	<div class="shell info-strip">
+		<ul class="strip">
+		<li class="strip-item" data-reveal>
+			<span class="strip-chip" aria-hidden="true">
+				<svg
+					class="h-5 w-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path
+						d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"
+					></path>
+					<circle cx="12" cy="10" r="3"></circle>
+				</svg>
+			</span>
+			<div class="strip-text">
+				<p class="strip-title">
+					<span>{heroStrip.locate}</span>
+				</p>
+				<p class="strip-value">
+					{business.address.line1}<br />{business.address.line2}
+				</p>
+			</div>
+		</li>
+
+		<li class="strip-item" data-reveal style="--reveal-delay: 80ms">
+			<span class="strip-chip" aria-hidden="true">
+				<svg
+					class="h-5 w-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path d="M9 18V5l12-2v13"></path>
+					<circle cx="6" cy="18" r="3"></circle>
+					<circle cx="18" cy="16" r="3"></circle>
+				</svg>
+			</span>
+			<div class="strip-text">
+				<p class="strip-title">
+					<span>{heroStrip.nights}</span>
+				</p>
+				<p class="strip-value">Sufi · Bollywood · Strings, {business.eventStart}</p>
+			</div>
+		</li>
+
+		<li class="strip-item" data-reveal style="--reveal-delay: 160ms">
+			<span class="strip-chip" aria-hidden="true">
+				<svg
+					class="h-5 w-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path
+						d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"
+					></path>
+				</svg>
+			</span>
+			<div class="strip-text">
+				<p class="strip-title">
+					<span>{heroStrip.reservation}</span>
+				</p>
+				<p class="strip-value">
+					<a href={`tel:${contact.tel}`} class="strip-number">{contact.telDisplay}</a>
+				</p>
+			</div>
+		</li>
+		</ul>
+	</div>
+</section>
+
+<style>
+	/*
+		Single-viewport opening on desktop: panel + strip share one 100svh
+		column. The panel grows to fill the leftover space and centres its
+		content in it, so the strip sits pinned to the bottom of the viewport
+		with a 10px landing — Locate / Nights / Reservation end the first
+		screen. Below lg the stack flows past the fold — copy, plate and
+		three strip slots cannot legibly fit a phone screen.
+	*/
+	#top {
+		display: flex;
+		flex-direction: column;
+	}
+
+	@media (width >= 64rem) {
+		#top {
+			min-height: 100svh;
+			justify-content: flex-start;
+		}
+	}
+
+	/*
+		The panel. One surface step above the page (ember on void — DESIGN.md's
+		definition of ember, "raised surfaces"), with the ochre wall glow
+		anchored at 78% 18% so it falls behind the photograph instead of
+		behind the copy.
+	*/
+	.hero-panel {
+		background-color: var(--color-canyon-ember);
+		background-image: radial-gradient(
+			70rem 45rem at 78% 18%,
+			color-mix(in oklab, var(--color-canyon-ochre) 16%, transparent),
+			transparent 62%
+		);
+		border-bottom: 1px solid var(--color-canyon-coal);
+	}
+
+	/*
+		Stacked and centred by default — copy and plate as one phone screen;
+		two columns from lg.
+
+		The header sits in normal flow directly above on phones, so the
+		grid's padding-top is the gap between header and copy: 1.25rem. On desktop the header overlays again (see Nav.astro) and the
+		lg block below restores the clearance that accounts for it.
+		Below lg the grid keeps its full-viewport shape
+		(`min-height: 100svh` with centred content), so the greeting and
+		the doorway land as one screen the way the reference stacks its
+		own. `min-height`, not `height`: on a short phone the content
+		still grows past the fold instead of clipping. At lg the grid
+		keeps 2rem of padding-bottom so the ember ground runs a little
+		longer, and the plate's -3rem overhang spends 2rem of that on
+		padding — leaving a 1rem protrusion past the panel that the
+		strip's own padding clears.
+	*/
+	.hero-grid {
+		display: grid;
+		gap: clamp(1.75rem, 5svh, 3.5rem);
+		align-items: center;
+		justify-items: center;
+		min-height: 100svh;
+		align-content: center;
+		padding-top: 1.25rem;
+		/* 30px between the photo and the panel's dividing line on phones.
+			Desktop keeps 2rem in the lg block: the overhang math spends it. */
+		padding-bottom: 30px;
+	}
+
+	/* Centred stack: badge, greeting, lede and CTA all on the middle line.
+		Nudged up on phones: the grid centres its content in 100svh, and
+		centring absorbs padding changes, so padding alone can never lift
+		this text — the translate does. Cleared on desktop, where the
+		panel centres the grid instead. */
+	.hero-copy {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		transform: translateY(-36px);
+	}
+
+	@media (width >= 64rem) {
+		.hero-grid {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 21rem);
+			justify-items: stretch;
+			min-height: 0;
+			align-content: normal;
+			/* Clears the overlaid desktop header with room to breathe. */
+			padding-top: clamp(4.5rem, 8svh, 6rem);
+			padding-bottom: 2rem;
+			width: 100%;
+		}
+
+		.hero-copy {
+			align-items: flex-start;
+			text-align: left;
+			transform: none;
+		}
+
+		/*
+			The panel stretches to fill the viewport column and centres the
+			grid inside it, so the strip below lands on the fold.
+		*/
+		.hero-panel {
+			flex: 1 0 auto;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+	}
+
+	/*
+		The lede — three lines on phones, two on desktop. Line one is the
+		pillars on their own line via the authored <br>; line two runs
+		~31em in Plus Jakarta Sans (advance widths off the font file), so
+		at 1rem it wraps into two lines in a phone column and holds one
+		line in the ~515px desktop column. Stays below the site-wide lede
+		token (1.0625rem) so it supports the greeting instead of
+		competing with it. Phones get 14px; desktop steps up to 1rem,
+		where line two still holds a single line.
+	*/
+	.hero-lede {
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+
+	@media (width >= 64rem) {
+		.hero-lede {
+			font-size: 1rem;
+		}
+	}
+
+	/*
+		The doorway — the real logo, shown big. Stacked: capped by gutter,
+		by an absolute size, and by the viewport height, so a 4:5 plate stays
+		grand without pushing the copy off the first screen — `40svh` is a
+		50svh-tall plate at 4:5, bezel on top.
+
+		At lg it fills its 21rem column and carries the overhang: 574px of
+		plate against a copy column of about 440px at the 1024px breakpoint,
+		so the doorway sets the panel's height and the sign reads first.
+	*/
+	.hero-plate {
+		width: min(84vw, 18rem, 40svh);
+		margin-inline: auto;
+		/* Phones: the plate rides up with the text. Cleared on desktop,
+			where the overhang margin owns the plate's position. */
+		transform: translateY(-12px);
+	}
+
+	@media (width >= 64rem) {
+		.hero-plate {
+			width: 100%;
+			margin-inline: 0;
+			margin-bottom: -3rem;
+			transform: none;
+		}
+	}
+
+	/*
+		The headline — compact on phones, full display on desktop.
+
+		Phone: one line, always. "Welcome to Canyon!" measures ~10.5em in
+		Fraunces (advance widths off the font file); the tracking is
+		pulled to -0.03em to buy room, bringing it to ~9.95em, so at
+		8.5vw a 390px phone sets ~33px (~330px of type against a ~342px
+		column). This is the absolute ceiling — smaller phones sit nearly
+		edge to edge, with only kerning slack to spare. The 1.5rem floor
+		keeps a
+		320px viewport inside its ~272px column. `nowrap` holds the line;
+		the spans stay inline so the space between them is the only
+		break — which never takes.
+	*/
+	.hero-title {
+		font-family: var(--font-display);
+		font-size: clamp(1.5rem, 8.5vw, 3rem);
+		font-weight: 560;
+		line-height: 1.1;
+		letter-spacing: -0.03em;
+		color: var(--color-canyon-champagne);
+		white-space: nowrap;
+	}
+
+	.hero-title .hero-line {
+		display: inline;
+	}
+
+	@media (width >= 64rem) {
+		/* Desktop: the original full-size greeting, "Welcome to" over
+			"Canyon!" — the spans stack so the break holds at any viewport
+			height, not just when the column forces it. */
+		.hero-title {
+			font-size: var(--text-hero);
+			line-height: 1.02;
+			letter-spacing: -0.015em;
+			white-space: normal;
+			text-wrap: balance;
+		}
+
+		.hero-title .hero-line {
+			display: block;
+		}
+	}
+
+	/* ── The strip ──────────────────────────────────────────────────── */
+
+	/* 30px between the panel's dividing line and the strip on phones.
+		Desktop keeps its clearance in the lg block: the doorway overhangs
+		the panel by 1rem there, so the strip must stand further off. */
+	.info-strip {
+		padding-top: 30px;
+		padding-bottom: clamp(1.5rem, 3svh, 2.5rem);
+	}
+
+	@media (width >= 64rem) {
+		/* Pinned to the fold: 10px of landing under Locate / Nights / Reservation. */
+		.info-strip {
+			margin-top: auto;
+			padding-top: clamp(2.5rem, 5svh, 3.5rem);
+			padding-bottom: 10px;
+		}
+	}
+
+	.strip {
+		display: grid;
+		gap: 2rem;
+	}
+
+	@media (width >= 48rem) {
+		.strip {
+			/* The reference's own proportions: the address is the long one. */
+			grid-template-columns: 1.2fr 1fr 1fr;
+			gap: 2.75rem;
+		}
+	}
+
+	/* Icon left, title + info stacked right: the chip centres against the
+		whole block, not just the title. Zero gap on phones so each title
+		hugs its info; the roomier rhythm returns once the strip runs
+		three columns. */
+	.strip-item {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.strip-text {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	@media (width >= 48rem) {
+		.strip-text {
+			gap: 0.5rem;
+		}
+
+		.strip-value {
+			margin-top: 0;
+		}
+	}
+
+	.strip-title {
+		font-family: var(--font-display);
+		font-size: 1.5rem;
+		letter-spacing: -0.01em;
+		color: var(--color-canyon-champagne);
+	}
+
+	/* The double-bezel, at 48px: amber line icon in a dark disc. */
+	.strip-chip {
+		display: grid;
+		place-items: center;
+		width: 3rem;
+		height: 3rem;
+		flex-shrink: 0;
+		border-radius: 9999px;
+		border: 1px solid var(--color-canyon-coal);
+		background-color: var(--color-canyon-void);
+		color: var(--color-canyon-amber);
+	}
+
+	/* Beside the chip, under the title — the column geometry places it,
+		so no indent is needed at any width. Hugged tight on phones. */
+	.strip-value {
+		margin: -0.25rem 0 0 0;
+		font-size: 0.875rem;
+		line-height: 1.5;
+		color: color-mix(in oklab, var(--color-canyon-champagne) 80%, transparent);
+	}
+
+	.strip-number {
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		color: var(--color-canyon-champagne);
+		text-decoration: none;
+		transition: color 300ms var(--ease-out-soft);
+		/* 44px tap height with no layout shift: the padding grows the
+		   hit area, the negative margin gives the space back. */
+		display: inline-block;
+		padding-block: 0.625rem;
+		margin-block: -0.625rem;
+	}
+
+	.strip-number:hover {
+		color: var(--color-canyon-amber);
+	}
+</style>

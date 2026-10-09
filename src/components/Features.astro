@@ -1,0 +1,150 @@
+---
+import { business, signatureDrink, tourSteps } from '../data/site';
+
+/*
+	Four things Canyon is, in the reference's four-card slot.
+
+	Openhouse runs Multi-Cuisine / Delectable Concoctions / Rustic Ambience /
+	Surreal Vibes here — icon, title, one line, no boxes. Same shape, Canyon's
+	facts: every line below already appears on this site or in its data, so
+	nothing here can drift from anything else. The music line is the hero
+	strip's middle slot read aloud; the kitchen line is the kitchen's own
+	lede; the sip line is the drink's name and printed ingredients; the
+	rooftop line is their own poster type, caps and all.
+
+	No visible header — the reference has none either, and four labelled
+	cards need no introduction. The h2 is sr-only so the section keeps its
+	name for anyone not seeing the grid. Centred, because everything around
+	it is left-aligned: the cadence break is what keeps the page from
+	reading as a template.
+*/
+
+const features = [
+	{
+		title: 'Live Music',
+		line: `Sufi · Bollywood · Strings, ${business.eventStart}`,
+		icon: 'music',
+	},
+	{
+		title: 'Multi-Cuisine',
+		line: 'Italian, Asian and grill off one kitchen.',
+		icon: 'cloche',
+	},
+	{
+		title: 'Signature Sips',
+		line: `${signatureDrink.name} ${signatureDrink.ingredients.map((i) => i.toLowerCase()).join(', ')}.`,
+		icon: 'coupe',
+	},
+	{
+		title: 'The Rooftop',
+		line: tourSteps.rooftop.line,
+		icon: 'moon',
+	},
+] as const;
+---
+
+<section aria-labelledby="features-heading" class="py-20 md:py-28">
+	<div class="shell">
+		<h2 id="features-heading" class="sr-only">What Canyon does</h2>
+		<ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+			{
+				features.map((feature, i) => (
+					<li
+						class="flex flex-col items-center text-center"
+						data-reveal
+						style={`--reveal-delay:${i * 70}ms`}
+					>
+						<span class="feature-chip" aria-hidden="true">
+							{feature.icon === 'music' && (
+								<svg
+									class="h-6 w-6"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M9 18V5l12-2v13" />
+									<circle cx="6" cy="18" r="3" />
+									<circle cx="18" cy="16" r="3" />
+								</svg>
+							)}
+							{feature.icon === 'cloche' && (
+								<svg
+									class="h-6 w-6"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M3 19h18" />
+									<path d="M5 19a7 7 0 0 1 14 0" />
+									<path d="M12 12V10.5" />
+									<circle cx="12" cy="8.5" r="1" />
+								</svg>
+							)}
+							{feature.icon === 'coupe' && (
+								<svg
+									class="h-6 w-6"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M4 5h16c0 4.2-3.6 7.5-8 7.5S4 9.2 4 5Z" />
+									<path d="M12 12.5V19" />
+									<path d="M8.5 19h7" />
+								</svg>
+							)}
+							{feature.icon === 'moon' && (
+								<svg
+									class="h-6 w-6"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+									<path d="M17.5 3.5l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4-1.4-.5 1.4-.5Z" />
+								</svg>
+							)}
+						</span>
+						<h3 class="mt-5 font-display text-blurb tracking-[-0.01em] text-canyon-champagne">
+							{feature.title}
+						</h3>
+						<p class="mt-2 max-w-[16rem] text-base leading-relaxed text-canyon-champagne/85">
+							{feature.line}
+						</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	/*
+		The double-bezel disc, at 56px: amber line icon in a dark disc.
+		Same values as the hero's strip-chip — scoped here rather than
+		global because only these two places use it, and unifying them
+		would mean touching the hero for no visible gain.
+	*/
+	.feature-chip {
+		display: grid;
+		place-items: center;
+		width: 3.5rem;
+		height: 3.5rem;
+		flex-shrink: 0;
+		border-radius: 9999px;
+		border: 1px solid var(--color-canyon-coal);
+		background-color: var(--color-canyon-void);
+		color: var(--color-canyon-amber);
+	}
+</style>

@@ -1,0 +1,97 @@
+---
+import Section from './Section.astro';
+import { business, contact } from '../data/site';
+
+/** One ruled ledger panel; rows split by hairlines, action link right on desktop */
+const label =
+	'text-body font-medium tracking-[0.16em] text-canyon-amber uppercase';
+const link =
+	'group mt-4 inline-flex min-h-[2.75rem] items-center gap-2 text-sm font-medium text-canyon-amber transition-colors duration-300 hover:text-canyon-champagne sm:mt-0';
+const arrow = 'h-3.5 w-3.5';
+---
+
+<Section id="visit" eyebrow="Find us" heading="Second floor, Jagmal Chowk." eyebrowClass="eyebrow text-body" headingClass="mt-4 font-display text-heading leading-[1.02] tracking-[-0.02em] text-balance text-canyon-champagne">
+	<div class="mt-10 overflow-hidden rounded-shell border border-canyon-coal/70 bg-canyon-ember" data-reveal>
+		<div class="grid gap-x-8 gap-y-1 p-6 sm:grid-cols-[1fr_auto] sm:items-center md:p-8">
+				<h3 class={label}>Address</h3>
+				<address class="mt-3 text-blurb text-canyon-champagne not-italic">
+					{business.address.line1}<br />
+					{business.address.line2}
+				</address>
+				<a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" class={link}>
+					Open in Maps
+					<svg
+						class={arrow}
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.25"
+						stroke-linecap="round"
+						aria-hidden="true"
+					>
+						<path d="M7 17L17 7M9 7h8v8" />
+					</svg>
+				</a>
+		</div>
+		<div class="grid gap-x-8 gap-y-1 border-t border-canyon-coal/70 p-6 sm:grid-cols-[1fr_auto] sm:items-center md:p-8">
+				<h3 class={label}>Reservations</h3>
+				<p class="mt-3 font-display text-quote tracking-[-0.02em] tabular-nums whitespace-nowrap text-canyon-champagne">
+					{contact.telDisplay}
+				</p>
+				<a href={`tel:${contact.tel}`} class={link}>
+					Call
+					<svg
+						class={arrow}
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.25"
+						stroke-linecap="round"
+						aria-hidden="true"
+					>
+						<path d="M7 17L17 7M9 7h8v8" />
+					</svg>
+				</a>
+		</div>
+		<div class="grid gap-x-8 gap-y-1 border-t border-canyon-coal/70 p-6 sm:grid-cols-[1fr_auto] sm:items-center md:p-8">
+				<h3 class={label}>Events &amp; groups</h3>
+				<p class="mt-3 font-display text-quote tracking-[-0.02em] tabular-nums whitespace-nowrap text-canyon-champagne">
+					{contact.resDisplay}
+				</p>
+				<a href={`tel:${contact.resTel}`} class={link}>
+					Call
+					<svg
+						class={arrow}
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.25"
+						stroke-linecap="round"
+						aria-hidden="true"
+					>
+						<path d="M7 17L17 7M9 7h8v8" />
+					</svg>
+				</a>
+		</div>
+	</div>
+
+	{/*
+		Hours are genuinely unknown. Saying nothing beats inventing them, so the
+		section states that plainly — in a voice that sounds like the venue,
+		not a database.
+	*/}
+	<div class="mt-6 overflow-hidden rounded-shell border border-canyon-coal/70 bg-canyon-void/40 p-1.5" data-reveal>
+		<iframe
+			title="Map to Canyon at Hotel Intercity International, Jagmal Chowk, Bilaspur"
+			src="https://www.google.com/maps?q=Hotel%20Intercity%20International%20Jagmal%20Chowk%20Bilaspur&output=embed"
+			class="h-64 w-full rounded-core md:h-72"
+			loading="lazy"
+			referrerpolicy="no-referrer-when-downgrade"
+			allowfullscreen
+		></iframe>
+	</div>
+	<p class="mx-auto mt-10 -mb-10 max-w-md text-center text-sm text-canyon-champagne/85 md:mx-0 md:-mb-14 md:text-left md:text-lede" data-reveal>
+		Nights run late here. Coming late, or on a holiday?
+		<br />Call ahead and we'll hold the table.
+	</p>
+</Section>
