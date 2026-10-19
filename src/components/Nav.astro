@@ -1,52 +1,93 @@
 ---
 import { navigation, business } from '../data/site';
 import { Image } from 'astro:assets';
-import CanyonMark from './CanyonMark.astro';
 import canyonLogo from '../assets/canyon-logo-gold.png';
+import CanyonMark from './CanyonMark.astro';
+
+/*
+	The bar, on every page.
+
+	STICKY: it follows the scroll on all pages now. The site is six pages and
+	"Book a Table" is the one action that has to stay in reach — pressing
+	Up on a phone to find it was the weak point of the single page, and a
+	multi-page site needs the way back anyway. It hangs from the top of the
+	viewport; the same treatment on both kinds of screen keeps one
+	pixel-truth instead of two.
+
+	On the surface it is the same ground as the hero panel (see .hero-panel
+	in Hero.astro): ember with the identical ochre glow, so the brand lockup
+	reads as one lit sign wherever it sits. Once the page scrolls, the bar
+	collapses to a thin glass line — .is-scrolled below — so content sliding
+	underneath never shows a seam.
+
+	ACTIVE PAGE: the destination you are on carries aria-current="page" and
+	the amber ink. Screen readers get it; sighted users get it as colour
+	alone (the underline sweep on hover is deliberately NOT mirrored on
+	[current], so rest and hover stay distinguishable).
+*/
+const { pathname } = Astro.url;
+const isCurrent = (href: string): boolean =>
+	href === '/' ? pathname === '/' : pathname.startsWith(href);
 ---
 
-{/*
-	Non-sticky bar — it scrolls away with the page, so there is no scrim
-	and no scroll fill. Same ground as the hero panel (see the style
-	block): ember with the identical ochre glow, so the two read as one
-	surface. On desktop the header overlays the panel transparently
-	instead — the hero shows through, which matches pixel-exactly. On
-	phones it sits in normal flow with 4px of hero padding below it;
-	on desktop the hero's own padding clears the overlay, which keeps
-	the greeting vertically centred in the opening viewport.
-*/}
 <header
 	id="site-header"
-	class="relative z-50 lg:absolute lg:inset-x-0 lg:top-0"
+	class="sticky top-0 z-50"
 >
 	<div class="shell relative">
-		<nav class="flex items-center justify-between gap-4 py-3.5" aria-label="Main">
+		<nav class="flex items-center justify-between gap-4 py-3.5 md:gap-2" aria-label="Main">
 			<a
-				href="#top"
+				href="/"
 				class="group brand-lockup flex items-center gap-2.5 text-canyon-champagne"
-				aria-label={`${business.name} — back to top`}
+				aria-current={pathname === '/' ? 'page' : undefined}
 			>
+				{/* Real link text, visually hidden. The wordmark is an
+					aria-hidden image, which left the anchor with empty
+					textContent — an aria-label carried its name, but the
+					SEO link-text audit reads text only, so the name now
+					lives in the tree where every reader (crawler, screen
+					reader, audit) sees it. */}
+				<span class="sr-only">{business.name}, home</span>
+				{/* Mark + wordmark, restored at the owner's ask ("the logo is not
+					visible in the header"). The composition mirrors the footer
+					lockup — arch first, then the script — sized so the two inks
+					arrive at the same visual height (the arch at w-9 renders
+					≈48px tall against the script's ≈49px at w-28). The mark
+					stays under the row's 49.4px ink height, so the bar keeps
+					its 77px — the height the hero's above-fold math is built
+					on. The wordmark carries a 3px translate-y: measured, the
+					two boxes centre exactly (delta 0) yet the script's ink
+					sits high in its box against the arch, and the owner asked
+					it "a little down" to the arch's optical centre — translate
+					not margin, so the translated ink leaves the 77px bar and
+					the flow untouched. Tailwind utility sizing here (w-9)
+					rather than a scoped rule: a scoped selector can never
+					reach into a child component's own template, which is
+					exactly how the page-head mark ended up unstyled. */}
 				<CanyonMark class="w-9 shrink-0" tone="amber" />
-				{/* Optical alignment: the script's visual mass sits high in its
-				box, so it rides ~3px above the mark's centre. Nudged down with
-				a transform, which never moves the mark itself. */}
 				<Image
 					src={canyonLogo}
 					alt=""
 					width={224}
 					densities={[1, 2]}
-					class="h-auto w-28 shrink-0 translate-y-[5px]"
+					class="h-auto w-28 shrink-0 translate-y-[3px] md:w-24 lg:w-28"
 					aria-hidden="true"
 				/>
 			</a>
 
-			<ul class="hidden items-center gap-8 md:flex">
+			<ul class="hidden items-center gap-7 md:gap-3 md:flex lg:gap-7">
 				{
 					navigation.map((item) => (
 						<li>
 							<a
 								href={item.href}
-								class="relative py-1 text-action font-semibold tracking-[0.14em] text-canyon-champagne/80 uppercase transition-colors duration-300 hover:text-canyon-champagne"
+								aria-current={isCurrent(item.href) ? 'page' : undefined}
+								class:list={[
+									'nav-link inline-flex items-center py-3 text-action font-semibold tracking-[0.14em] uppercase transition-colors duration-300 md:tracking-[0.06em] lg:tracking-[0.14em]',
+									isCurrent(item.href)
+										? 'text-canyon-amber'
+										: 'text-canyon-champagne/80 hover:text-canyon-champagne',
+								]}
 							>
 								{item.label}
 							</a>
@@ -59,7 +100,7 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 				<button
 					type="button"
 					data-open-booking
-					class="min-h-[2.75rem] rounded-md bg-canyon-amber px-6 text-action font-bold tracking-[0.02em] text-canyon-void transition-[filter] duration-300 hover:brightness-110"
+					class="min-h-[2.75rem] rounded-md bg-canyon-amber px-6 text-action font-bold tracking-[0.02em] text-canyon-void transition-[filter] duration-300 hover:brightness-110 md:px-4 lg:px-6"
 				>
 					Book a Table
 				</button>
@@ -101,28 +142,36 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 		</nav>
 	</div>
 
-	{/* Drawer sits outside the shell so it can bleed full width. Transparent
-		so the header's own hero ground (ember + glow) shows through. */}
+	{/* Drawer sits outside the shell so it can bleed full width. The bar's
+		own ground shows through; the drawer animates on the grid-row trick,
+		which needs no measured max-height and never jumps when the content
+		changes. Falls back to a plain show/hide where transitions on
+		grid-template-rows are unsupported. */}
 	<div
 		id="mobile-menu"
 		hidden
-		class="relative overscroll-contain border-t border-canyon-coal md:hidden"
+		class="drawer relative max-h-[calc(100dvh-4.25rem)] overflow-y-auto overscroll-contain border-t border-canyon-coal md:hidden"
 	>
-		<div class="shell py-6">
+		<div class="shell drawer-inner grid min-h-0 py-6">
 			{/*
-				A named landmark. This drawer repeats the header's four links, so
+				A named landmark. This drawer repeats the header's link row (Home
+				through Visit), so
 				without a label a screen reader announces two identical anonymous
 				lists and there is no way to tell which is which. "Mobile" pairs
 				with the header's "Main" to name them apart.
 			*/}
-			<nav aria-label="Mobile">
+			<nav aria-label="Mobile" class="min-h-0">
 				<ul>
 					{
 						navigation.map((item) => (
 							<li class="border-b border-canyon-coal/70 last:border-0">
 								<a
 									href={item.href}
-									class="flex items-baseline justify-between py-3.5 font-display text-2xl tracking-[-0.02em] text-canyon-champagne"
+									aria-current={isCurrent(item.href) ? 'page' : undefined}
+									class:list={[
+										'flex items-baseline justify-between py-3.5 font-display text-2xl tracking-[-0.02em]',
+										isCurrent(item.href) ? 'text-canyon-amber' : 'text-canyon-champagne',
+									]}
 								>
 									{item.label}
 								</a>
@@ -133,15 +182,15 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 			</nav>
 
 			{/*
-				Booking and telephone sit outside the nav above: they are actions,
-				not sections, and burying CTAs inside a navigation landmark makes a
-				screen reader announce them as if they were destinations.
+				Booking sits outside the nav above: it is an action, not a
+				destination, and burying the CTA inside a navigation landmark makes
+				a screen reader announce it as if it were a place.
 			*/}
-			<div class="mt-6 grid gap-2.5">
+			<div class="min-h-0 pt-6">
 				<button
 					type="button"
 					data-open-booking
-					class="min-h-[3rem] rounded-md bg-canyon-amber text-body font-semibold text-canyon-void transition-[filter] duration-300 hover:brightness-110"
+					class="min-h-[3rem] w-full rounded-md bg-canyon-amber text-base font-semibold text-canyon-void transition-[filter] duration-300 hover:brightness-110"
 				>
 					Book a Table
 				</button>
@@ -152,24 +201,10 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 
 <style>
 	/*
-		One glow over the whole lockup, not per piece: mark and wordmark
-		read as a single lit sign — matched the way the real entrance
-		sign reads, tubes and lettering in one warm light. Kept soft and
-		close on purpose: the script strokes are thin, and a heavy halo
-		blurs their edges so the wordmark reads muddy instead of clean.
-		Tinted gold to match the lockup ink. This still lifts the lockup
-		off the dark bar without smearing it.
-	*/
-	.brand-lockup {
-		filter: drop-shadow(0 0 5px rgba(224, 161, 60, 0.3));
-	}
-
-	/*
 		The hero's own ground, restated: ember with the identical ochre
 		glow (same shape, same anchor, same 16% mix — see .hero-panel in
-		Hero.astro), so the in-flow phone header melts into the panel
-		beneath it instead of stepping from flat colour to glow.
-		Desktop overlays transparently — the panel itself shows through.
+		Hero.astro), so the sticky bar and the panel beneath it read as one
+		surface at the top of the page.
 	*/
 	#site-header {
 		background-color: var(--color-canyon-ember);
@@ -178,18 +213,84 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 			color-mix(in oklab, var(--color-canyon-ochre) 16%, transparent),
 			transparent 62%
 		);
+		/*
+			The scroll state. A hairline plus a slightly lifted ember so
+			content never shows through the join; the blur softens what
+			passes beneath without smearing the lockup's thin strokes.
+		*/
+		box-shadow: 0 1px 0 transparent;
+		transition:
+			background-color 300ms var(--ease-out-soft),
+			box-shadow 300ms var(--ease-out-soft);
 	}
 
-	@media (width >= 64rem) {
-		#site-header {
-			background-color: transparent;
-			background-image: none;
-		}
-	}</style>
+	/*
+		Kept as the standard property only — the build's minifier mangles
+		any -webkit- duplicate into the only surviving declaration, and
+		Chromium ignores that form, which is how every Chrome/Edge guest
+		ended up with a blurless bar. Lightning-css emits what it needs;
+		giving it one property to work with keeps the glass intact.
+	*/
+	#site-header.is-scrolled {
+		background-color: color-mix(in oklab, var(--color-canyon-ember) 88%, transparent);
+		background-image: none;
+		backdrop-filter: blur(10px);
+		box-shadow: 0 1px 0 var(--color-canyon-coal);
+	}
+
+	/*
+		The hover underline. Draws from the left on a 220ms soft curve, and
+		set on the ::after so it never fights the layout. Not applied to
+		[aria-current] — the current page is amber at rest; giving it the
+		hover animation too would make rest look like hover.
+	*/
+	.nav-link {
+		position: relative;
+	}
+
+	.nav-link::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 1px;
+		background-color: var(--color-canyon-amber);
+		transform: scaleX(0);
+		transform-origin: left center;
+		transition: transform 220ms var(--ease-out-soft);
+	}
+
+	.nav-link:hover::after {
+		transform: scaleX(1);
+	}
+
+	/*
+		The drawer. `hidden` guards the no-JS route; JS swaps `hidden` for
+		`data-open`, and the animation is a single 0fr→1fr row with the
+		opacity along for the ride. The inner wrapper needs min-height:0 so
+		the 1fr row can actually collapse — see the class on the shell div.
+		Very short screens scroll the drawer itself (overflow above), which
+		keeps one scroll sense instead of unlocking the page underneath.
+	*/
+	.drawer {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition:
+			grid-template-rows 380ms var(--ease-spring),
+			opacity 260ms var(--ease-out-soft);
+		opacity: 0;
+	}
+
+	.drawer[data-open] {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+</style>
 
 <script>
 	const toggle = document.getElementById('menu-toggle');
-	const menu = document.getElementById('mobile-menu');
+	const menu = document.getElementById('mobile-menu') as HTMLDivElement | null;
 	const iconOpen = document.getElementById('icon-open');
 	const iconClose = document.getElementById('icon-close');
 
@@ -199,6 +300,10 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 	// Held module-level so it can be removed. Previously an anonymous listener
 	// was added on every open and never torn down — the Nth visit ran N copies.
 	let menuKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+	// The close animation has to finish before `hidden` returns; a timer is
+	// the honest fallback — transitionend may never fire if the row was
+	// already there-and-gone between frames.
+	let closeTimer: number | undefined;
 
 	function trapFocusInMenu() {
 		if (!menu) return;
@@ -209,26 +314,41 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 
 		firstElement?.focus();
 
+		/*
+			On the document, not on the drawer: the drawer has no inert
+			background (native dialog it is not), so a Tab opened from the
+			page underneath must be caught too. Anything outside the menu
+			gets pulled to the first link; the last link wraps to the first.
+			With focus inside, forward at last → first and shifted at first
+			→ last close the loop.
+		*/
 		menuKeyHandler = (e: KeyboardEvent) => {
 			if (e.key !== 'Tab') return;
+			const inside = menu.contains(document.activeElement);
 
 			if (e.shiftKey) {
-				if (document.activeElement === firstElement) {
+				if (!inside || document.activeElement === firstElement) {
 					e.preventDefault();
 					lastElement?.focus();
 				}
 			} else {
-				if (document.activeElement === lastElement) {
+				if (!inside || document.activeElement === lastElement) {
 					e.preventDefault();
 					firstElement?.focus();
 				}
 			}
 		};
-		menu.addEventListener('keydown', menuKeyHandler);
+		document.addEventListener('keydown', menuKeyHandler);
+	}
+
+	function releaseMenuTrap() {
+		if (menuKeyHandler) document.removeEventListener('keydown', menuKeyHandler);
+		menuKeyHandler = null;
 	}
 
 	function setMenu(open: boolean) {
 		if (!toggle || !menu) return;
+		window.clearTimeout(closeTimer);
 		toggle.setAttribute('aria-expanded', String(open));
 		toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
 		iconOpen?.classList.toggle('hidden', open);
@@ -238,9 +358,24 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 		if (open) {
 			lastMenuTrigger = toggle;
 			menu.hidden = false;
+			/*
+				Double rAF: one frame is not always enough for the engine to
+				commit the 0fr layout before the data-open frame, and a
+				transition that starts from no previous row animates from
+				nothing instead of from closed.
+			*/
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					menu.setAttribute('data-open', '');
+				});
+			});
 			trapFocusInMenu();
 		} else {
-			menu.hidden = true;
+			releaseMenuTrap();
+			menu.removeAttribute('data-open');
+			closeTimer = window.setTimeout(() => {
+				menu.hidden = true;
+			}, 400);
 			lastMenuTrigger?.focus();
 			lastMenuTrigger = null;
 		}
@@ -260,4 +395,26 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 			toggle.focus();
 		}
 	});
+
+	/*
+		The bar's scroll state. rAF-throttled, and the threshold is 8px so a
+		pencil-width of scroll reads as "departed the top" instead of
+		constantly flipping at 0–1px. Initial state is set once on load — a
+		page restored mid-scroll gets the glass bar immediately.
+	*/
+	let ticking = false;
+	const sync = () => {
+		toggle?.closest('header')?.classList.toggle('is-scrolled', window.scrollY > 8);
+		ticking = false;
+	};
+	sync();
+	window.addEventListener(
+		'scroll',
+		() => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(sync);
+		},
+		{ passive: true }
+	);
 </script>

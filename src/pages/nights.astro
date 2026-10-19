@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHead from '../components/PageHead.astro';
+import Nights from '../components/Nights.astro';
+import Footer from '../components/Footer.astro';
+import BookingModal from '../components/BookingModal.astro';
+import { pages, business } from '../data/site';
+---
+
+{/*
+	/nights — the home page's Nights section plus its own cut (`full`),
+	which widens the Sufi archive to five frames and closes on the
+	first-night reel and its caption, the account's own memory of it.
+*/}
+<Layout title={pages.nights.title} description={pages.nights.description}>
+	<Nav />
+
+	<main id="main" class="relative z-10 pb-20 md:pb-28">
+		<PageHead
+			eyebrow="The Nights"
+			title={`Live music from ${business.eventStart}`}
+			lede="Sufi Night. Bollywood Night. Strings Under The Stars."
+		/>
+
+		<Nights full />
+	</main>
+
+	<Footer />
+	<BookingModal />
+</Layout>

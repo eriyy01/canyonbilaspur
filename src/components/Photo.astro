@@ -8,19 +8,33 @@ import { Image } from 'astro:assets';
  * explicit dimensions, so no layout shift and far less weight than the source
  * JPEGs (which are 1080px-wide, up to 216 KB each).
  *
- * There is deliberately no `position` prop. Every plate in this set is a
- * designed post with Canyon's own typography burnt into it, and this component
- * exists to make sure none of it gets sliced: the box is always declared at the
- * plate's own ratio (see src/data/frames.ts), which leaves `object-cover`
- * nothing to crop. If a frame ever needs to deviate from its native ratio, the
- * fix is a new box at that ratio — never a nudge to `object-position`, which is
- * how letters ended up cut in half.
+ * There is deliberately no free-form `object-position`. Every plate in this
+ * set is a designed post with Canyon's own typography burnt into it, and this
+ * component exists to make sure none of it gets sliced: the box is always
+ * declared at the plate's own ratio (see src/data/frames.ts), which leaves
+ * `object-cover` nothing to crop. If a frame ever needs to deviate from its
+ * native ratio, the fix is a new box at that ratio — never a nudge to
+ * `object-position`, which is how letters ended up cut in half.
  *
- * `arch` changes the outline of the shell, not the box: the frame stays at its
- * own ratio and the photograph is still whole, it is simply seen through a
- * round-headed doorway rather than a rounded rectangle. It exists for exactly
- * one plate — the entrance sign in the hero, which is a photograph of an arch —
- * and it assumes a 4:5 box (see the note in the style block).
+ * `position` is the one exception, and it is not free-form either: a named
+ * edge (top), not arbitrary percentages. It exists for exactly one plate —
+ * the venue's own daylight setup photograph — whose source carries a phone
+ * watermark in its bottom-left corner (see the header of setups.ts). That
+ * plate is rendered in a 4:5 box with `position: top`, which trims the
+ * device artefact off the bottom of a photograph that has no typography to
+ * lose. If you reach for this prop, look at the plate first.
+ *
+ * `zoom` opts a frame into the slow hover settle (`.zoom`, global.css).
+ * Off by default: posters and photographs carrying burnt-in type keep
+ * their hands still, because a zoom that starts mid-word looks like
+ * damage. On by default in galleries and the strip, where the plate is
+ * the whole message and a small swell reads as want.
+ *
+ * `arch` changes the outline of the shell, not the box: the frame stays at
+ * its own ratio and the photograph is still whole, it is simply seen through
+ * a round-headed doorway rather than a rounded rectangle. It exists for
+ * exactly one plate — the entrance sign in the hero, which is a photograph
+ * of an arch — and it assumes a 4:5 box (see the note in the style block).
  */
 interface Props {
 	src: ImageMetadata;
@@ -35,6 +49,10 @@ interface Props {
 	arch?: boolean;
 	/** Responsive widths. Hero plate maxes at 24rem so defaults overserve it. */
 	widths?: number[];
+	/** Named edge for the one-watermark crop (see the doc block). */
+	position?: 'top';
+	/** Slow hover settle on the photograph. Galleries only. */
+	zoom?: boolean;
 }
 
 const {
@@ -46,14 +64,16 @@ const {
 	sizes = '(min-width: 768px) 45vw, 92vw',
 	arch = false,
 	widths = [420, 640, 900, 1200],
+	position,
+	zoom = false,
 } = Astro.props;
 ---
 
-<figure class={className}>
+<figure class:list={[className, { zoom }]}>
 	<div
 		class:list={[
 			arch ? 'shell-arch' : 'rounded-shell',
-			'overflow-hidden border border-canyon-coal/70 bg-canyon-void/40 p-1.5',
+			'overflow-hidden border border-canyon-coal/70 bg-canyon-void/40 p-1.5 transition-colors duration-500 hover:border-canyon-ochre/30',
 		]}
 	>
 		<div
@@ -71,7 +91,7 @@ const {
 				loading={priority ? 'eager' : 'lazy'}
 				fetchpriority={priority ? 'high' : 'auto'}
 				format="avif"
-				class="h-full w-full object-cover"
+				class:list={['h-full w-full object-cover', position === 'top' && 'object-top']}
 			/>
 		</div>
 	</div>

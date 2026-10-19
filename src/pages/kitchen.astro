@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHead from '../components/PageHead.astro';
+import Photo from '../components/Photo.astro';
+import Kitchen from '../components/Kitchen.astro';
+import ReserveBand from '../components/ReserveBand.astro';
+import Footer from '../components/Footer.astro';
+import BookingModal from '../components/BookingModal.astro';
+import { pages, signatureDrink } from '../data/site';
+import { bar, tablesSet } from '../data/frames';
+---
+
+{/*
+	/kitchen — the menu board from the home page, then the two things the
+	home page has no room for: the signature drink photographed whole, and
+	the account's own "Tables Set" line for this fortnight. Ends on the
+	reservation band, since the board's CTA is the menu, not the table.
+*/}
+<Layout title={pages.kitchen.title} description={pages.kitchen.description}>
+	<Nav />
+
+	<main id="main" class="relative z-10">
+		<PageHead eyebrow="The Kitchen" title="Italian, Asian and grill off one kitchen." />
+
+		<Kitchen />
+
+		{/* The signature pour — a named, photographed drink with published
+		    ingredients, so it gets a section of its own. Both plates are the
+		    post's own 4:5 pair. */}
+		<section aria-labelledby="jamun-heading" class="pt-16 pb-0 md:pt-24 md:pb-0">
+			<div class="shell">
+				<div class="grid items-center gap-10 md:grid-cols-12 md:gap-12">
+					<div class="flex flex-col items-center text-center md:col-span-5 md:items-start md:text-left" data-reveal>
+						<p class="eyebrow text-body">Signature pour</p>
+						<h2
+							id="jamun-heading"
+							translate="no"
+							class="mt-4 font-display text-heading leading-[1.04] tracking-[-0.02em] text-balance text-canyon-amber"
+						>
+							{signatureDrink.name}
+						</h2>
+
+						<p class="mt-5 max-w-md font-display text-quote leading-[1.15] text-pretty text-canyon-champagne italic">
+							“{signatureDrink.line}”
+						</p>
+
+						<ul class="mt-7 flex flex-wrap items-center justify-center gap-2 md:justify-start">
+							{
+								signatureDrink.ingredients.map((ingredient) => (
+									<li class="rounded-full border border-canyon-coal bg-canyon-void/60 px-4 py-2 text-sm tracking-wide text-canyon-champagne" translate="no">
+										{ingredient}
+									</li>
+								))
+							}
+						</ul>
+
+						<p class="mt-7 text-blurb tracking-[0.02em] text-canyon-champagne/85">
+							{signatureDrink.temper.join(' · ')}
+						</p>
+						<p class="mt-2 font-display text-blurb text-pretty text-canyon-amber italic">“{signatureDrink.punch}”</p>
+					</div>
+
+					<div class="grid grid-cols-2 items-start gap-4 md:col-span-7 md:gap-5">
+						{
+							[bar.jamun, bar.jamunAlt].map((frame) => (
+								<div data-reveal>
+									<Photo
+										src={frame.src}
+										alt={frame.alt}
+										ratio={frame.ratio}
+										zoom
+										widths={[420, 640, 900]}
+										sizes="(min-width: 768px) 29vw, 47vw"
+									/>
+								</div>
+							))
+						}
+					</div>
+				</div>
+			</div>
+		</section>
+
+		{/* "Tables Set" — the account's own fortnight line, both frames of
+		    the 13 Oct sidecar: the straight room photograph with their notes
+		    card, and their designed card. Left to speak for themselves, the
+		    way the feed does. */}
+		<section aria-label="Tables set this week" class="pt-16 pb-20 md:pt-24 md:pb-28">
+			<div class="shell">
+				{/* Owner-directed: the opener centres on the stacked single-column
+					view, back left when the two plates sit side by side from sm. */}
+				<p class="eyebrow text-body text-center sm:text-left" data-reveal>The tables, right now</p>
+				<div class="mt-8 grid grid-cols-1 items-start gap-6 sm:grid-cols-2 md:gap-8">
+					{
+						[tablesSet.notes, tablesSet.card].map((plate) => (
+							<div data-reveal>
+								<Photo
+									src={plate.src}
+									alt={plate.alt}
+									ratio={plate.ratio}
+									zoom
+									widths={[420, 640, 900, 1200]}
+									sizes="(min-width: 640px) 44vw, 92vw"
+								/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<ReserveBand />
+	</main>
+
+	<Footer />
+	<BookingModal />
+</Layout>

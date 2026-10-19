@@ -1,19 +1,37 @@
 ---
 import Section from './Section.astro';
-import { business, contact } from '../data/site';
+import { business, contact, visit } from '../data/site';
 
-/** One ruled ledger panel; rows split by hairlines, action link right on desktop */
+/** One ruled ledger panel; rows split by hairlines. On sm+ the label sits
+ *  left with its action link under it, the value right of the label column */
 const label =
 	'text-body font-medium tracking-[0.16em] text-canyon-amber uppercase';
 const link =
 	'group mt-4 inline-flex min-h-[2.75rem] items-center gap-2 text-sm font-medium text-canyon-amber transition-colors duration-300 hover:text-canyon-champagne sm:mt-0';
 const arrow = 'h-3.5 w-3.5';
+
+/**
+ * `intro=false` for the /visit page, where PageHead already carries the
+ * visit heading as the h1 — the ledger rows and map are the section's work,
+ * not a second heading. `true` for the home page, which has no PageHead.
+ */
+interface Props {
+	intro?: boolean;
+}
+
+const { intro = true } = Astro.props;
 ---
 
-<Section id="visit" eyebrow="Find us" heading="Second floor, Jagmal Chowk." eyebrowClass="eyebrow text-body" headingClass="mt-4 font-display text-heading leading-[1.02] tracking-[-0.02em] text-balance text-canyon-champagne">
+<Section
+	id="visit"
+	eyebrow={intro ? visit.eyebrow : undefined}
+	heading={intro ? visit.heading : undefined}
+	eyebrowClass="eyebrow text-body"
+	headingClass="mt-4 font-display text-heading leading-[1.02] tracking-[-0.02em] text-balance text-canyon-champagne"
+>
 	<div class="mt-10 overflow-hidden rounded-shell border border-canyon-coal/70 bg-canyon-ember" data-reveal>
 		<div class="grid gap-x-8 gap-y-1 p-6 sm:grid-cols-[1fr_auto] sm:items-center md:p-8">
-				<h3 class={label}>Address</h3>
+				<p class={label}>Address</p>
 				<address class="mt-3 text-blurb text-canyon-champagne not-italic">
 					{business.address.line1}<br />
 					{business.address.line2}
@@ -34,7 +52,7 @@ const arrow = 'h-3.5 w-3.5';
 				</a>
 		</div>
 		<div class="grid gap-x-8 gap-y-1 border-t border-canyon-coal/70 p-6 sm:grid-cols-[1fr_auto] sm:items-center md:p-8">
-				<h3 class={label}>Reservations</h3>
+				<p class={label}>Reservations</p>
 				<p class="mt-3 font-display text-quote tracking-[-0.02em] tabular-nums whitespace-nowrap text-canyon-champagne">
 					{contact.telDisplay}
 				</p>
@@ -54,7 +72,7 @@ const arrow = 'h-3.5 w-3.5';
 				</a>
 		</div>
 		<div class="grid gap-x-8 gap-y-1 border-t border-canyon-coal/70 p-6 sm:grid-cols-[1fr_auto] sm:items-center md:p-8">
-				<h3 class={label}>Events &amp; groups</h3>
+				<p class={label}>Events &amp; groups</p>
 				<p class="mt-3 font-display text-quote tracking-[-0.02em] tabular-nums whitespace-nowrap text-canyon-champagne">
 					{contact.resDisplay}
 				</p>
@@ -76,9 +94,12 @@ const arrow = 'h-3.5 w-3.5';
 	</div>
 
 	{/*
-		Hours are genuinely unknown. Saying nothing beats inventing them, so the
-		section states that plainly — in a voice that sounds like the venue,
-		not a database.
+		Hours are genuinely unknown — closing time has never been published,
+		so nothing claims it. The closer is their own line from the tour
+		post: the maps are shown and the route found — "come see it for
+		yourself." This section lives only on /visit (see pages/index for
+		the home flow), so `intro` gates the section heading, not this
+		note.
 	*/}
 	<div class="mt-6 overflow-hidden rounded-shell border border-canyon-coal/70 bg-canyon-void/40 p-1.5" data-reveal>
 		<iframe
@@ -90,8 +111,7 @@ const arrow = 'h-3.5 w-3.5';
 			allowfullscreen
 		></iframe>
 	</div>
-	<p class="mx-auto mt-10 -mb-10 max-w-md text-center text-sm text-canyon-champagne/85 md:mx-0 md:-mb-14 md:text-left md:text-lede" data-reveal>
-		Nights run late here. Coming late, or on a holiday?
-		<br />Call ahead and we'll hold the table.
+	<p class="mx-auto mt-10 -mb-10 max-w-md text-center text-blurb text-canyon-champagne/85 md:mx-0 md:-mb-14 md:text-left" data-reveal>
+		{visit.note}
 	</p>
 </Section>

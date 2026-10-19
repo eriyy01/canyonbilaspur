@@ -8,13 +8,41 @@
  *
  * `alt` is derived mechanically from each post's first caption line, and a few
  * frames show identifiable guests. Confirm both before launch.
- *
- * Pruned: Dc8l4SqKBcZ img0 and DeHSXGVGodB img6 were removed — no section
- * references them (see src/data/frames.ts). Regenerating with
- * scripts/download-media.mjs will restore them; prune again if so.
  */
 import type { ImageMetadata } from 'astro';
 
+import mDZPAOBCVOx_0 from '../assets/images/DZPA_OBCVOx-01.jpg';
+import mDZPBKDiCZIt_0 from '../assets/images/DZPBKDiCZIt-01.jpg';
+import mDZPBvRfCT0j_0 from '../assets/images/DZPBvRfCT0j-01.jpg';
+import mDZZp4zUmtXV_0 from '../assets/images/DZZp4zUmtXV-01.jpg';
+import mDZZp4zUmtXV_1 from '../assets/images/DZZp4zUmtXV-02.jpg';
+import mDZZp4zUmtXV_2 from '../assets/images/DZZp4zUmtXV-03.jpg';
+import mDZZp4zUmtXV_3 from '../assets/images/DZZp4zUmtXV-04.jpg';
+import mDZkVzCZuGkL_0 from '../assets/images/DZkVzCZuGkL-01.jpg';
+import mDZpcWKTiOaO_0 from '../assets/images/DZpcWKTiOaO-01.jpg';
+import mDZ4KuGpfF_0 from '../assets/images/DZ4-_KuGpfF-01.jpg';
+import mDZ4KuGpfF_1 from '../assets/images/DZ4-_KuGpfF-02.jpg';
+import mDaLAdkhC6Lf_0 from '../assets/images/DaLAdkhC6Lf-01.jpg';
+import mDcA3wAGCAu3_0 from '../assets/images/DcA3wAGCAu3-01.jpg';
+import mDcA3wAGCAu3_1 from '../assets/images/DcA3wAGCAu3-02.jpg';
+import mDcA3wAGCAu3_2 from '../assets/images/DcA3wAGCAu3-03.jpg';
+import mDcGTQDGmlPi_0 from '../assets/images/DcGTQDGmlPi-01.jpg';
+import mDcGTQDGmlPi_1 from '../assets/images/DcGTQDGmlPi-02.jpg';
+import mDcGTQDGmlPi_2 from '../assets/images/DcGTQDGmlPi-03.jpg';
+import mDcNrylXufi6_0 from '../assets/images/DcNrylXufi6-01.jpg';
+import mDcTeNQxmpNP_0 from '../assets/images/DcTeNQxmpNP-01.jpg';
+import mDcTeNQxmpNP_1 from '../assets/images/DcTeNQxmpNP-02.jpg';
+import mDcTeNQxmpNP_2 from '../assets/images/DcTeNQxmpNP-03.jpg';
+import mDcVj6z5mpPr_0 from '../assets/images/DcVj6z5mpPr-01.jpg';
+import mDcVj6z5mpPr_1 from '../assets/images/DcVj6z5mpPr-02.jpg';
+import mDcbbyE0jssE_0 from '../assets/images/DcbbyE0jssE-01.jpg';
+import mDcbbyE0jssE_1 from '../assets/images/DcbbyE0jssE-02.jpg';
+import mDcddsuOCJl2_0 from '../assets/images/DcddsuOCJl2-01.jpg';
+import mDciWfZoivHp_0 from '../assets/images/DciWfZoivHp-01.jpg';
+import mDcqJegxqDGM_0 from '../assets/images/DcqJegxqDGM-01.jpg';
+import mDc3FVoVuGQz_0 from '../assets/images/Dc3FVoVuGQz-01.jpg';
+import mDc3bNzGqIXA_0 from '../assets/images/Dc3bNzGqIXA-01.jpg';
+import mDc8l4SqKBcZ_0 from '../assets/images/Dc8l4SqKBcZ-01.jpg';
 import mDdBtmHmjp9Q_0 from '../assets/images/DdBtmHmjp9Q-01.jpg';
 import mDdBtmHmjp9Q_1 from '../assets/images/DdBtmHmjp9Q-02.jpg';
 import mDdG8aA1urkp_0 from '../assets/images/DdG8aA1urkp-01.jpg';
@@ -39,6 +67,13 @@ import mDeHSXGVGodB_2 from '../assets/images/DeHSXGVGodB-03.jpg';
 import mDeHSXGVGodB_3 from '../assets/images/DeHSXGVGodB-04.jpg';
 import mDeHSXGVGodB_4 from '../assets/images/DeHSXGVGodB-05.jpg';
 import mDeHSXGVGodB_5 from '../assets/images/DeHSXGVGodB-06.jpg';
+import mDeHSXGVGodB_6 from '../assets/images/DeHSXGVGodB-07.jpg';
+import mDePABXDNAy5_0 from '../assets/images/DePABXDNAy5-01.jpg';
+import mDecANvTGpYn_0 from '../assets/images/DecANvTGpYn-01.jpg';
+import mDecANvTGpYn_1 from '../assets/images/DecANvTGpYn-02.jpg';
+import mDeovc0yDlxE_0 from '../assets/images/Deovc0yDlxE-01.jpg';
+import mDeovc0yDlxE_1 from '../assets/images/Deovc0yDlxE-02.jpg';
+import mDeovc0yDlxE_2 from '../assets/images/Deovc0yDlxE-03.jpg';
 
 export type Shot = {
 	shortCode: string;
@@ -49,6 +84,158 @@ export type Shot = {
 };
 
 export const shots: Shot[] = [
+	{
+		shortCode: 'DZPA_OBCVOx',
+		type: 'Image',
+		likes: 49,
+		alt: "Golden skies.",
+		img0: mDZPAOBCVOx_0,
+	},
+	{
+		shortCode: 'DZPBKDiCZIt',
+		type: 'Image',
+		likes: 71,
+		alt: "Bilaspur, we’re almost ready.",
+		img0: mDZPBKDiCZIt_0,
+	},
+	{
+		shortCode: 'DZPBvRfCT0j',
+		type: 'Image',
+		likes: 62,
+		alt: "Above the city.",
+		img0: mDZPBvRfCT0j_0,
+	},
+	{
+		shortCode: 'DZZp4zUmtXV',
+		type: 'Sidecar',
+		likes: 129,
+		alt: "We are COMINGGGGGGGG…",
+		img0: mDZZp4zUmtXV_0,
+		img1: mDZZp4zUmtXV_1,
+		img2: mDZZp4zUmtXV_2,
+		img3: mDZZp4zUmtXV_3,
+	},
+	{
+		shortCode: 'DZkVzCZuGkL',
+		type: 'Image',
+		likes: 46,
+		alt: "Some like it sweet.",
+		img0: mDZkVzCZuGkL_0,
+	},
+	{
+		shortCode: 'DZpcWKTiOaO',
+		type: 'Video',
+		likes: 62,
+		alt: "The clues are there if you’re paying attention.",
+		img0: mDZpcWKTiOaO_0,
+	},
+	{
+		shortCode: 'DZ4-_KuGpfF',
+		type: 'Sidecar',
+		likes: 52,
+		alt: "Where every meal comes with a side of rustling leaves and sunset skies.",
+		img0: mDZ4KuGpfF_0,
+		img1: mDZ4KuGpfF_1,
+	},
+	{
+		shortCode: 'DaLAdkhC6Lf',
+		type: 'Image',
+		likes: 37,
+		alt: "Every great story has a beginning.",
+		img0: mDaLAdkhC6Lf_0,
+	},
+	{
+		shortCode: 'DcA3wAGCAu3',
+		type: 'Sidecar',
+		likes: 264,
+		alt: "Just two weeks to go.",
+		img0: mDcA3wAGCAu3_0,
+		img1: mDcA3wAGCAu3_1,
+		img2: mDcA3wAGCAu3_2,
+	},
+	{
+		shortCode: 'DcGTQDGmlPi',
+		type: 'Sidecar',
+		likes: 0,
+		alt: "We know you wanna taste these",
+		img0: mDcGTQDGmlPi_0,
+		img1: mDcGTQDGmlPi_1,
+		img2: mDcGTQDGmlPi_2,
+	},
+	{
+		shortCode: 'DcNrylXufi6',
+		type: 'Video',
+		likes: 123,
+		alt: "Okay, it’s officially happening.",
+		img0: mDcNrylXufi6_0,
+	},
+	{
+		shortCode: 'DcTeNQxmpNP',
+		type: 'Sidecar',
+		likes: 250,
+		alt: "consider this your sign to start planning the outfit.",
+		img0: mDcTeNQxmpNP_0,
+		img1: mDcTeNQxmpNP_1,
+		img2: mDcTeNQxmpNP_2,
+	},
+	{
+		shortCode: 'DcVj6z5mpPr',
+		type: 'Sidecar',
+		likes: 72,
+		alt: "if golden hour had a favourite child",
+		img0: mDcVj6z5mpPr_0,
+		img1: mDcVj6z5mpPr_1,
+	},
+	{
+		shortCode: 'DcbbyE0jssE',
+		type: 'Sidecar',
+		likes: 279,
+		alt: "one more look before we let you all in.",
+		img0: mDcbbyE0jssE_0,
+		img1: mDcbbyE0jssE_1,
+	},
+	{
+		shortCode: 'DcddsuOCJl2',
+		type: 'Video',
+		likes: 305,
+		alt: "just one more night of wondering. see you tomorrow.",
+		img0: mDcddsuOCJl2_0,
+	},
+	{
+		shortCode: 'DciWfZoivHp',
+		type: 'Video',
+		likes: 1222,
+		alt: "from a vision to a night we won’t forget.",
+		img0: mDciWfZoivHp_0,
+	},
+	{
+		shortCode: 'DcqJegxqDGM',
+		type: 'Video',
+		likes: 1613,
+		alt: "Got plans? change them.",
+		img0: mDcqJegxqDGM_0,
+	},
+	{
+		shortCode: 'Dc3FVoVuGQz',
+		type: 'Image',
+		likes: 164,
+		alt: "First of many.",
+		img0: mDc3FVoVuGQz_0,
+	},
+	{
+		shortCode: 'Dc3bNzGqIXA',
+		type: 'Video',
+		likes: 166,
+		alt: "pov: the group chat finally made a plan.",
+		img0: mDc3bNzGqIXA_0,
+	},
+	{
+		shortCode: 'Dc8l4SqKBcZ',
+		type: 'Video',
+		likes: 1873,
+		alt: "05.09.26, just like that, our first Sufi night became a memory.",
+		img0: mDc8l4SqKBcZ_0,
+	},
 	{
 		shortCode: 'DdBtmHmjp9Q',
 		type: 'Sidecar',
@@ -67,7 +254,7 @@ export const shots: Shot[] = [
 	{
 		shortCode: 'DdVpFmXDpjD',
 		type: 'Sidecar',
-		likes: 69,
+		likes: 70,
 		alt: "Join us at Canyon for Strings Under The Stars, where the violin takes centre stage and the night finds its rhythm.",
 		img0: mDdVpFmXDpjD_0,
 		img1: mDdVpFmXDpjD_1,
@@ -75,14 +262,14 @@ export const shots: Shot[] = [
 	{
 		shortCode: 'DdblVqkOZ_7',
 		type: 'Video',
-		likes: 673,
+		likes: 706,
 		alt: "A little Bollywood magic from last Saturday at Canyon.",
 		img0: mDdblVqkOZ7_0,
 	},
 	{
 		shortCode: 'Ddls0-ADq1d',
 		type: 'Sidecar',
-		likes: 286,
+		likes: 305,
 		alt: "After the rain, Canyon just hits different.",
 		img0: mDdls0ADq1d_0,
 		img1: mDdls0ADq1d_1,
@@ -91,21 +278,21 @@ export const shots: Shot[] = [
 	{
 		shortCode: 'DdoQX7puPgf',
 		type: 'Video',
-		likes: 97,
+		likes: 100,
 		alt: "Money can’t buy happiness, but it can buy a great dinner at Canyon. And honestly, close enough",
 		img0: mDdoQX7puPgf_0,
 	},
 	{
 		shortCode: 'DdwNQ30OOVX',
 		type: 'Video',
-		likes: 135,
+		likes: 139,
 		alt: "This is how our weekdays look.",
 		img0: mDdwNQ30OOVX_0,
 	},
 	{
 		shortCode: 'Dd1U59dmiXl',
 		type: 'Sidecar',
-		likes: 184,
+		likes: 198,
 		alt: "A little tour of Canyon",
 		img0: mDd1U59dmiXl_0,
 		img1: mDd1U59dmiXl_1,
@@ -115,7 +302,7 @@ export const shots: Shot[] = [
 	{
 		shortCode: 'Dd3zmVwiphv',
 		type: 'Video',
-		likes: 583,
+		likes: 959,
 		alt: "Join us at Canyon for Sufi Night on 3rd October, from 8 PM onwards, as we bring together soulful Sufi music, live dho...",
 		img0: mDd3zmVwiphv_0,
 	},
@@ -130,7 +317,7 @@ export const shots: Shot[] = [
 	{
 		shortCode: 'DeHSXGVGodB',
 		type: 'Sidecar',
-		likes: 306,
+		likes: 528,
 		alt: "Last saturday was a little soulful",
 		img0: mDeHSXGVGodB_0,
 		img1: mDeHSXGVGodB_1,
@@ -138,5 +325,30 @@ export const shots: Shot[] = [
 		img3: mDeHSXGVGodB_3,
 		img4: mDeHSXGVGodB_4,
 		img5: mDeHSXGVGodB_5,
+		img6: mDeHSXGVGodB_6,
+	},
+	{
+		shortCode: 'DePABXDNAy5',
+		type: 'Video',
+		likes: 126,
+		alt: "Looks like the search was worth it.",
+		img0: mDePABXDNAy5_0,
+	},
+	{
+		shortCode: 'DecANvTGpYn',
+		type: 'Sidecar',
+		likes: 50,
+		alt: "A table set for good food, long conversations, and moments worth staying for",
+		img0: mDecANvTGpYn_0,
+		img1: mDecANvTGpYn_1,
+	},
+	{
+		shortCode: 'Deovc0yDlxE',
+		type: 'Sidecar',
+		likes: 42,
+		alt: "Some nights are made for celebrating, others for simply soaking in the moment",
+		img0: mDeovc0yDlxE_0,
+		img1: mDeovc0yDlxE_1,
+		img2: mDeovc0yDlxE_2,
 	},
 ];

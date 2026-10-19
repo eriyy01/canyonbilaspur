@@ -28,12 +28,14 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 	problem is gone and so is the machinery.
 
 	THE OVERHANG is one negative margin, not absolute positioning: at lg the
-	plate carries `margin-bottom: -6.5rem`, which shortens its own grid row by
+	plate carries `margin-bottom: -3rem`, which shortens its own grid row by
 	exactly that much (a grid item is centred on its margin box, so the box
-	ends up that far past the row). The grid keeps 2.5rem of bottom padding
-	so the panel reads a little longer, leaving a net 4rem overhang past the
-	panel. The strip below reserves 7rem of padding-top to stand clear of
-	it. Below lg the plate is in normal flow, so the overhang is switched off.
+	ends up that far past the row). The grid keeps 4rem of bottom padding —
+	1rem of ember under the doorway, completed by the strip's 1.5rem and
+	the dip correction into the vertical padding-equality identity (see the
+	lg block). Because 4rem > 3rem the plate stays inside the panel at
+	every viewport height. Below lg the plate is in normal flow, so the
+	overhang is switched off.
 
 	BREAKPOINTS: two columns only from lg up. At md the shell is ~688px wide
 	and a 20rem plate leaves the lede 288px — about seven lines of 17px type,
@@ -48,16 +50,22 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 <section id="top">
 	<div class="hero-panel">
 		<div class="shell hero-grid">
-			<div class="hero-copy" data-reveal>
+			{/* One-time entrance, not a scroll reveal: the visitor has already
+				landed, and arrival is the greeting. CSS keyframes on the copy's
+				elements (not the container — the container carries its own
+				nudge transform on phones) run exactly once, on load, in a set
+				sequence: greeting, lede, action, then the doorway a beat
+				later. `prefers-reduced-motion` gets the finished state. */}
+			<div class="hero-copy">
 		{/* Phone: the whole greeting on one line (see .hero-title). Desktop:
 			the two spans stack (see the lg block) back into the original
 			"Welcome to" / "Canyon!" break. */}
-			<h1 class="hero-title">
+			<h1 class="hero-title hero-arrive" style="--hero-delay: 0ms">
 				<span class="hero-line">{heroGreeting.line1}</span> <span class="hero-line">{heroGreeting.line2}</span>
 			</h1>
 
 				{/* [bio] verbatim, then facts assembled from this file — see site.ts. */}
-				<p class="hero-lede mt-3 max-w-[34rem] text-pretty text-canyon-champagne/85 lg:mt-5">
+				<p class="hero-lede hero-arrive mt-3 max-w-[34rem] text-pretty text-canyon-champagne/85 lg:mt-5" style="--hero-delay: 120ms">
 					{heroLede.line1}<br />{heroLede.line2}
 				</p>
 
@@ -65,7 +73,9 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 					One action: the telephone number has left the hero because it is now
 					the third slot of the strip directly beneath this.
 				*/}
-				<CtaPill label={cta.hero} variant="simple" class="mt-6 lg:mt-8" />
+				<div class="hero-arrive" style="--hero-delay: 240ms">
+					<CtaPill label={cta.hero} variant="simple" class="mt-6 lg:mt-8" />
+				</div>
 			</div>
 
 			{/*
@@ -75,17 +85,25 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 				`priority` because this is the LCP candidate; `sizes` because the
 				frame is one grid column wide, not the full-width gallery frame
 				Photo.astro's default assumes.
+
+				The glow behind it is the candlelight the arch wants: a soft oval
+				of amber that breathes — 9 seconds, alternate, a few percent of
+				its own opacity outward and back — slow enough to read as
+				lamplight rather than as animation.
 			*/}
-			<div class="hero-plate" data-reveal style="--reveal-delay: 120ms">
-				<Photo
-					src={hero.src}
-					alt={hero.alt}
-					ratio={hero.ratio}
-					arch
-					priority
-			widths={[320, 480, 640, 800, 960]}
-			sizes="(min-width: 64rem) 21rem, min(84vw, 18rem)"
-				/>
+			<div class="hero-plate">
+				<div class="hero-glow" aria-hidden="true"></div>
+				<div class="hero-arrive" style="--hero-delay: 200ms">
+					<Photo
+						src={hero.src}
+						alt={hero.alt}
+						ratio={hero.ratio}
+						arch
+						priority
+						widths={[320, 480, 640, 800, 960]}
+						sizes="(min-width: 64rem) 25rem, min(84vw, 18rem)"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -187,12 +205,14 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 
 <style>
 	/*
-		Single-viewport opening on desktop: panel + strip share one 100svh
-		column. The panel grows to fill the leftover space and centres its
-		content in it, so the strip sits pinned to the bottom of the viewport
-		with a 10px landing — Locate / Nights / Reservation end the first
-		screen. Below lg the stack flows past the fold — copy, plate and
-		three strip slots cannot legibly fit a phone screen.
+		Single-viewport opening on desktop (the sticky bar above spends its
+		own measured ~4.85rem band — see the lg block — so the column height
+		accounts for it): panel + strip share that column. The panel grows to
+		fill the leftover space and centres its content in it, so the strip
+		sits pinned to the bottom of the viewport with a landing — Locate /
+		Nights / Reservation end the first screen. Below lg the stack flows
+		past the fold — copy, plate and three strip slots cannot legibly fit
+		a phone screen.
 	*/
 	#top {
 		display: flex;
@@ -201,7 +221,10 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 
 	@media (width >= 64rem) {
 		#top {
-			min-height: 100svh;
+			/* The bar is 77px tall in practice: the lockup logo is 390×172
+				shown w-28 (49px) inside py-3.5 (28px). Reserved as a flat
+				5rem so the strip's landing survives font drift either way. */
+			min-height: calc(100svh - 5rem);
 			justify-content: flex-start;
 		}
 	}
@@ -226,18 +249,18 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 		Stacked and centred by default — copy and plate as one phone screen;
 		two columns from lg.
 
-		The header sits in normal flow directly above on phones, so the
-		grid's padding-top is the gap between header and copy: 1.25rem. On desktop the header overlays again (see Nav.astro) and the
-		lg block below restores the clearance that accounts for it.
-		Below lg the grid keeps its full-viewport shape
+		The header sits in normal flow directly above on every size — sticky
+		never overlay, one pixel-truth (see Nav.astro) — so the grid's
+		padding-top is simply the rhythm beneath it: 1.25rem on phones,
+		2.5rem at lg. Phones keep the full-viewport shape
 		(`min-height: 100svh` with centred content), so the greeting and
 		the doorway land as one screen the way the reference stacks its
 		own. `min-height`, not `height`: on a short phone the content
 		still grows past the fold instead of clipping. At lg the grid
-		keeps 2rem of padding-bottom so the ember ground runs a little
-		longer, and the plate's -3rem overhang spends 2rem of that on
-		padding — leaving a 1rem protrusion past the panel that the
-		strip's own padding clears.
+		carries 4rem of padding-bottom: with the plate's -3rem overhang
+		that leaves 1rem of ember under the doorway, and together with
+		the strip's fixed 2.5rem it completes the padding-equality
+		identity documented in the lg block below.
 	*/
 	.hero-grid {
 		display: grid;
@@ -267,13 +290,27 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 
 	@media (width >= 64rem) {
 		.hero-grid {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 21rem);
+			grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
 			justify-items: stretch;
 			min-height: 0;
 			align-content: normal;
-			/* Clears the overlaid desktop header with room to breathe. */
-			padding-top: clamp(4.5rem, 8svh, 6rem);
-			padding-bottom: 2rem;
+			/*
+				PADDING EQUALITY, holds at every viewport height. The panel
+				centres the grid, so the viewport's leftover splits evenly
+				and the fixed paddings decide whether the two sides read
+				the same. Above the copy: padding-top (2.5rem) plus the
+				greeting's line-box lead (~1.1rem). Below the plate:
+				padding-bottom minus the plate's 3rem overhang (4rem −
+				3rem = 1rem), plus the dip correction's 1.5rem of lifted
+				ink (see .hero-plate's lg block) and the strip's own
+				1.5rem before "Locate Us" — both sides read level at any
+				window height. 4rem also keeps the plate inside the panel
+				(4 > 3rem overhang), so the strip's padding always clears
+				it. The grown grid shrinks the centred leftover, which
+				rides the content up — the brief's "a little above".
+			*/
+			padding-top: 2.5rem;
+			padding-bottom: 4rem;
 			width: 100%;
 		}
 
@@ -292,6 +329,31 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
+		}
+	}
+
+	/*
+		The tablet band (md, below lg) flows instead of stretching. The
+		one-screen spread exists so Locate / Nights / Reservation can end
+		the first screen — but at these widths the strip already sits past
+		the fold, so the stretch only pools dead ember under the plate
+		(86px of it) and the hero reads bottom-heavy. Here the grid flows,
+		the phone lift is unnecessary (nothing centres against it), and
+		the content takes equal measured padding above and below:
+		header → greeting ink ≈ 46px, plate → border → "Locate Us"
+		≈ 47px. Phones keep the centred one-screen shape above untouched;
+		lg keeps its own panel-centred balance below.
+	*/
+	@media (width >= 48rem) and (width < 64rem) {
+		.hero-grid {
+			min-height: 0;
+			align-content: start;
+			padding-top: 1.75rem;
+			padding-bottom: 1.75rem;
+		}
+
+		.hero-copy {
+			transform: none;
 		}
 	}
 
@@ -317,29 +379,101 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 	}
 
 	/*
-		The doorway — the real logo, shown big. Stacked: capped by gutter,
-		by an absolute size, and by the viewport height, so a 4:5 plate stays
-		grand without pushing the copy off the first screen — `40svh` is a
-		50svh-tall plate at 4:5, bezel on top.
+		The doorway — the real logo, shown big. Stacked caps on phones:
+		gutter width, an absolute 18rem, and the viewport height (`40svh`
+		is a ~50svh-tall plate at 4:5, bezel on top), so the sign stays
+		grand without pushing the copy off the first screen.
 
-		At lg it fills its 21rem column and carries the overhang: 574px of
-		plate against a copy column of about 440px at the 1024px breakpoint,
-		so the doorway sets the panel's height and the sign reads first.
+		At lg it fills its 25rem column — wider than the flat copy column
+		by half again — and carries the overhang, so the doorway sets the
+		panel's height and the sign reads first.
 	*/
 	.hero-plate {
 		width: min(84vw, 18rem, 40svh);
 		margin-inline: auto;
+		/* Own stacking context: the glow inside carries z-index: -1, and
+			without this it would fall behind .hero-panel's backgrounds.
+			A transform (phones ride −12px; lg carries the dip
+			correction) creates a context too — the isolate guarantees
+			one regardless. The glow has to paint *inside* the doorway,
+			never under the panel's ember. */
+		isolation: isolate;
 		/* Phones: the plate rides up with the text. Cleared on desktop,
 			where the overhang margin owns the plate's position. */
 		transform: translateY(-12px);
 	}
 
 	@media (width >= 64rem) {
+		/*
+			THE DIP, CANCELLED. A grid item centres on its margin box, so
+			this -3rem bottom margin drags the doorway's visual centre
+			1.5rem (24px) below the row's centreline — beside the copy it
+			read as the photo hanging low. The translate is the exact
+			geometric correction: the ink lifts 24px while the layout box
+			stays put, so nothing downstream moves and no new protrusion
+			past the panel can appear (the plate moves away from the
+			border). The strip's padding is retuned to 1.5rem in step so
+			the air above and below the hero stays level (see the
+			.info-strip lg block).
+		*/
 		.hero-plate {
 			width: 100%;
 			margin-inline: 0;
 			margin-bottom: -3rem;
+			transform: translateY(-1.5rem);
+		}
+	}
+
+	/*
+		The arrival. One rise, 18px, 760ms on the soft curve, `both` so the
+		prefers-reduced-motion shortening lands on a finished frame. Delays
+		come from the inline --hero-delay set in the markup (greeting →
+		lede → action → doorway), which keyframes stagger by hand as a
+		sequence rather than by a shared interval — an arrival, not a ticker.
+	*/
+	.hero-arrive {
+		animation: hero-rise 760ms var(--ease-out-soft) both;
+		animation-delay: var(--hero-delay, 0ms);
+	}
+
+	@keyframes hero-rise {
+		from {
+			opacity: 0;
+			transform: translateY(18px);
+		}
+		to {
+			opacity: 1;
 			transform: none;
+		}
+	}
+
+	/*
+		Lamplight behind the arch. A warm oval, painted once and then
+	breathing ±25% of its own (already faint) opacity over 9 seconds —
+	slow enough to read as a candle, not as animation. Sits behind the
+	photograph, visible only at the arch's cut corners; the Photo shell
+	is opaque, so it cannot halo into the image.
+	*/
+	.hero-glow {
+		position: absolute;
+		inset: -16% -14%;
+		z-index: -1;
+		pointer-events: none;
+		opacity: 0.35;
+		background: radial-gradient(
+			50% 42% at 50% 34%,
+			color-mix(in oklab, var(--color-canyon-amber) 28%, transparent),
+			transparent 70%
+		);
+		animation: glow-breathe 9s ease-in-out 1.4s infinite alternate;
+	}
+
+	@keyframes glow-breathe {
+		from {
+			opacity: 0.35;
+		}
+		to {
+			opacity: 0.55;
 		}
 	}
 
@@ -391,18 +525,26 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 	/* ── The strip ──────────────────────────────────────────────────── */
 
 	/* 30px between the panel's dividing line and the strip on phones.
-		Desktop keeps its clearance in the lg block: the doorway overhangs
-		the panel by 1rem there, so the strip must stand further off. */
+		Desktop keeps its clearance in the lg block, fixed — a svh-scaled
+		value here is what let the hero's vertical balance drift between
+		window sizes. */
 	.info-strip {
 		padding-top: 30px;
 		padding-bottom: clamp(1.5rem, 3svh, 2.5rem);
 	}
 
 	@media (width >= 64rem) {
-		/* Pinned to the fold: 10px of landing under Locate / Nights / Reservation. */
+		/*
+			Fixed 1.5rem, retuned in step with the plate's dip correction:
+			the lifted doorway leaves 24px more air before the border, so
+			it comes back off here — the air above the hero and below it
+			to "Locate Us" reads level at every window height (see the
+			.hero-grid lg block for the full identity). Pinned to the
+			fold: 10px of landing under Locate / Nights / Reservation.
+		*/
 		.info-strip {
 			margin-top: auto;
-			padding-top: clamp(2.5rem, 5svh, 3.5rem);
+			padding-top: 1.5rem;
 			padding-bottom: 10px;
 		}
 	}
@@ -485,8 +627,8 @@ import { business, contact, cta, heroGreeting, heroLede, heroStrip } from '../da
 		/* 44px tap height with no layout shift: the padding grows the
 		   hit area, the negative margin gives the space back. */
 		display: inline-block;
-		padding-block: 0.625rem;
-		margin-block: -0.625rem;
+		padding-block: 0.75rem;
+		margin-block: -0.75rem;
 	}
 
 	.strip-number:hover {

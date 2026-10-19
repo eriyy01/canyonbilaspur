@@ -9,8 +9,8 @@ import { gallery, posters } from '../data/frames';
  *
  * Two rules, both learned the hard way.
  *
- * One — no repeated headlines. Every frame here is a designed post with its
- * own headline burnt in. The earlier build printed a second headline
+ * One — no repeated headlines. Many of these frames are designed posts with
+ * their own headline burnt in. The earlier build printed a second headline
  * underneath each one, so the page said "this is what you see." twice per
  * photograph. Where the photograph carries the words, the page does not
  * repeat them; the `alt` text carries them for anyone not seeing the image.
@@ -18,7 +18,7 @@ import { gallery, posters } from '../data/frames';
  * floor" — the part of the room you are looking at, which a photograph of a
  * ceiling cannot say about itself. Same job as `place` in the tour.
  *
- * Two — no reuse. Nights, Tour, Kitchen and Events already show their
+ * Two — no reuse. The nights pages and the tour already show their
  * strongest frames. This section uses only plates that are not spoken for, so
  * scrolling further actually shows you more of the venue rather than the same
  * photograph a second time under new words.
@@ -29,25 +29,42 @@ import { gallery, posters } from '../data/frames';
  */
 
 /* Spans are per-item, not cycled. The two 9:16 reels take the narrow columns —
-   at five columns a stage and a galaxy ceiling are the right height, at twelve
-   they are a wall — and they sit at opposite ends of the bento so the eye
-   never lands on two reels in a row. The 4:5 plates alternate around them,
-   with no frame resized to fit an arrangement. */
+   three and four per row — and pairs always sum to twelve so the grid rows
+   never orphan a plate. The 4:5 plates alternate around the reels, with no
+   frame resized to fit an arrangement. */
 const layout = [
 	{ frame: gallery.sufiStage, span: 'md:col-span-5', label: 'On stage' },
 	{ frame: posters.stringsAlt, span: 'md:col-span-7', label: 'The invite' },
-	{ frame: gallery.friends, span: 'md:col-span-5', label: 'The crowd' },
+	{ frame: gallery.vision, span: 'md:col-span-5', label: 'The vision' },
+	{ frame: gallery.friends, span: 'md:col-span-7', label: 'The crowd' },
+	/* Labels never quote the burnt-in type — their caption lines carry it
+	   for the alt; the label is the caption they wrote for the post. */
+	{ frame: gallery.tasteThis, span: 'md:col-span-5', label: 'Wanna taste these' },
 	{ frame: gallery.palms, span: 'md:col-span-7', label: 'Golden hour' },
-	{ frame: gallery.sky, span: 'md:col-span-7', label: 'Last light' },
+	{ frame: gallery.neon, span: 'md:col-span-5', label: 'The sign' },
+	{ frame: gallery.spicy, span: 'md:col-span-7', label: 'We like it spicy' },
 	{ frame: gallery.oculus, span: 'md:col-span-5', label: 'The ceiling' },
+	{ frame: gallery.sky, span: 'md:col-span-7', label: 'Last light' },
 ] as const;
+
+/**
+ * `intro=false` silences the section's own header for the /gallery page,
+ * where the page opener (PageHead) already says "This is the room." as the
+ * page's h1 — a section h2 repeating it word for word underneath would be
+ * exactly the repeated-headline habit the comment above bans.
+ */
+interface Props {
+	intro?: boolean;
+}
+
+const { intro = true } = Astro.props;
 ---
 
 <Section
 	id="gallery"
-	eyebrow="The Room"
-	heading="This is the room."
-	lede="Real photographs from the venue, not stock. Every night is a little different."
+	eyebrow={intro ? 'The Room' : undefined}
+	heading={intro ? 'This is the room.' : undefined}
+	lede={intro ? 'Real photographs from the venue, not stock. Released night by night on the account.' : undefined}
 	eyebrowClass="eyebrow text-body"
 	headingClass="mt-4 max-w-2xl font-display text-heading leading-[1.02] tracking-[-0.02em] text-balance text-canyon-champagne"
 >
@@ -55,7 +72,7 @@ const layout = [
 		{
 			layout.map(({ frame, span, label }, i) => (
 				<li class={span} data-reveal style={`--reveal-delay:${i * 70}ms`}>
-					<Photo src={frame.src} alt={frame.alt} ratio={frame.ratio} />
+					<Photo src={frame.src} alt={frame.alt} ratio={frame.ratio} zoom />
 					<p class="mt-3 text-center text-sm tracking-wide text-canyon-champagne/85 md:text-left">{label}</p>
 				</li>
 			))

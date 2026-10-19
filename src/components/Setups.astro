@@ -1,0 +1,68 @@
+---
+import Photo from './Photo.astro';
+import { setups } from '../data/setups';
+
+/**
+ * The celebration setups, laid out like the gallery lays out the room.
+ *
+ * Five photographs the venue sent over, built and shot by their own team:
+ * petals, candles, drapes, and the table at the end of all of it. No
+ * burnt-in typography to fight (one phone watermark, handled at the plate —
+ * see setups.ts), so the frames carry small hand-set labels the way
+ * Gallery.astro labels places — these label occasions.
+ *
+ * Spans are per-plate, and the one landscape plate frames the middle of the
+ * grid so the three tall frames never sit in an unbroken column.
+ */
+const layout = [
+	{
+		plate: setups.heart,
+		span: 'md:col-span-4',
+		label: 'The petal heart',
+		sizes: '(min-width: 768px) 33vw, 92vw',
+	},
+	{
+		plate: setups.candleDrapes,
+		span: 'md:col-span-4',
+		label: 'Drapes, by candlelight',
+		sizes: '(min-width: 768px) 33vw, 92vw',
+	},
+	{
+		plate: setups.drapeDay,
+		span: 'md:col-span-4',
+		label: 'Built before sunset',
+		sizes: '(min-width: 768px) 33vw, 92vw',
+	},
+	{
+		plate: setups.petalsWide,
+		span: 'md:col-span-7',
+		label: 'Rooftop, petals & candles',
+		sizes: '(min-width: 768px) 58vw, 92vw',
+	},
+	{
+		plate: setups.candleNight,
+		span: 'md:col-span-5',
+		label: 'The table, set',
+		sizes: '(min-width: 768px) 40vw, 92vw',
+	},
+] as const;
+---
+
+<ul class="grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:gap-8">
+	{
+		layout.map(({ plate, span, label, sizes }, i) => (
+			<li class={span} data-reveal style={`--reveal-delay:${i * 70}ms`}>
+				<Photo
+					src={plate.src}
+					alt={plate.alt}
+					ratio={plate.ratio}
+					position={'position' in plate ? plate.position : undefined}
+					zoom
+					widths={[420, 640, 900, 1200]}
+					sizes={sizes}
+				/>
+				<p class="mt-3 text-center text-sm tracking-wide text-canyon-champagne/85 md:text-left">{label}</p>
+			</li>
+		))
+	}
+</ul>

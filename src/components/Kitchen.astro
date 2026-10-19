@@ -15,7 +15,8 @@ import { cuisine, contact, cta } from '../data/site';
 
 	It is set on the venue's own ochre plaster tone rather than the standard
 	near-black surface, which is what makes it read as a menu instead of a
-	list of cards.
+	list of cards. The board is one component used once per page — home and
+	the kitchen page — so both pages say the same thing about the food.
 */
 ---
 
@@ -23,10 +24,13 @@ import { cuisine, contact, cta } from '../data/site';
 	<div class="shell">
 		<div class="grid gap-8 md:grid-cols-12 md:gap-10">
 			<div class="flex flex-col md:col-span-5" data-reveal>
+			{/* Owner-directed: the opener centres on phones, left again at md —
+				the lede below already runs exactly that phone-centred pattern,
+				so the two now arrive together. */}
 				<h2
-					class="max-w-md font-display text-heading leading-[1.04] tracking-[-0.02em] text-balance text-canyon-champagne"
+					class="mx-auto max-w-md text-center font-display text-heading leading-[1.04] tracking-[-0.02em] text-balance text-canyon-champagne md:mx-0 md:text-left"
 				>
-					Multicuisine, and no rush.
+					What we cook.
 				</h2>
 
 				<p class="mx-auto mt-6 max-w-sm text-center text-lede text-canyon-champagne/85 md:mx-0 md:text-left">
@@ -76,7 +80,7 @@ import { cuisine, contact, cta } from '../data/site';
 				<div class="rounded-shell border border-canyon-ochre/40 bg-canyon-ochre/[0.12] p-6 shadow-[0_1px_2px_rgba(43,33,24,0.06)] md:p-9">
 					<div class="flex items-baseline justify-between gap-4 pb-4">
 						<p class="font-display text-lede tracking-[-0.01em] text-canyon-champagne">
-							What we cook
+							Dishes
 						</p>
 						<p class="eyebrow">
 							Kitchen
@@ -90,7 +94,7 @@ import { cuisine, contact, cta } from '../data/site';
 									<h3 class="eyebrow">{category.title}</h3>
 									<ul class="mt-4">
 										{category.dishes.map((dish) => (
-											<li class="flex items-baseline justify-between gap-3 py-2.5">
+											<li class="py-2.5">
 												<span class="font-display text-lede leading-snug tracking-[-0.01em] text-canyon-champagne/95" translate="no">
 													{dish}
 												</span>
@@ -107,7 +111,7 @@ import { cuisine, contact, cta } from '../data/site';
 						reels. The full menu, prices and dietary requirements:
 						<a
 							href={`tel:${contact.tel}`}
-							class="font-medium text-canyon-amber underline decoration-canyon-amber/40 underline-offset-4 transition-colors hover:decoration-canyon-amber"
+							class="inline-block py-3.5 -my-3.5 font-medium text-canyon-amber underline decoration-canyon-amber/40 underline-offset-4 transition-colors hover:decoration-canyon-amber"
 						>
 							{cta.kitchen}
 						</a>

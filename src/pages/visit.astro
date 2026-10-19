@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHead from '../components/PageHead.astro';
+import Visit from '../components/Visit.astro';
+import ReserveBand from '../components/ReserveBand.astro';
+import Footer from '../components/Footer.astro';
+import BookingModal from '../components/BookingModal.astro';
+import { pages, business, visit } from '../data/site';
+---
+
+{/*
+	/visit — the practical page. The ledger and the map, then the
+	reservation band as the close: on the one page built for logistics,
+	the decision belongs at the bottom.
+*/}
+<Layout title={pages.visit.title} description={pages.visit.description}>
+	<Nav />
+
+	<main id="main" class="relative z-10">
+		<PageHead
+			eyebrow={visit.eyebrow}
+			title={visit.heading}
+			lede={`The address, the map, and both phone lines. Live music from ${business.eventStart}.`}
+		/>
+
+		<div class="pt-16 pb-0 md:pt-20">
+			<Visit intro={false} />
+		</div>
+
+		<div class="mt-4 md:mt-6">
+			<ReserveBand />
+		</div>
+	</main>
+
+	<Footer />
+	<BookingModal />
+</Layout>

@@ -32,29 +32,14 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 							<li>
 								<a
 									href={item.href}
-									class="inline-block py-1 text-canyon-champagne/85 transition-colors duration-300 hover:text-canyon-champagne"
+									aria-current={Astro.url.pathname === item.href ? 'page' : undefined}
+									class="inline-block py-2.5 text-canyon-champagne/85 transition-colors duration-300 hover:text-canyon-champagne"
 								>
 									{item.label}
 								</a>
 							</li>
 						))
 					}
-					<li>
-						<a
-							href="#events"
-							class="inline-block py-1 text-canyon-champagne/85 transition-colors duration-300 hover:text-canyon-champagne"
-						>
-							Events
-						</a>
-					</li>
-					<li>
-						<a
-							href="#gallery"
-							class="inline-block py-1 text-canyon-champagne/85 transition-colors duration-300 hover:text-canyon-champagne"
-						>
-							Gallery
-						</a>
-					</li>
 				</ul>
 			</div>
 
@@ -62,7 +47,10 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 				<p class="text-xs font-semibold tracking-[0.18em] text-canyon-amber uppercase">
 					Contact
 				</p>
-				<ul class="mt-4 space-y-2 text-base">
+				{/* Owner-directed: the label sits a little closer to the address
+					than the link columns' label-to-list gap — a column of tappable
+					links wants its air, a plain address doesn't. */}
+				<ul class="mt-2 space-y-2 text-base">
 					<li class="text-canyon-champagne/85">
 						{business.address.line1}<br />
 						{business.address.line2}
@@ -70,7 +58,7 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 					<li>
 						<a
 							href={`tel:${contact.tel}`}
-							class="inline-block py-1 text-canyon-champagne/85 tabular-nums transition-colors hover:text-canyon-champagne"
+							class="inline-block py-2.5 text-canyon-champagne/85 tabular-nums transition-colors hover:text-canyon-champagne"
 						>
 							+91 {contact.telDisplay}
 						</a>
@@ -121,7 +109,7 @@ import canyonLogo from '../assets/canyon-logo-gold.png';
 					href={business.instagramUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					aria-label="Canyon on Instagram"
+					aria-label="Canyon on Instagram @canyonbilaspur"
 					class="inline-flex min-h-[2.75rem] items-center gap-2 text-canyon-champagne/85 transition-colors duration-300 hover:text-canyon-amber"
 				>
 					<svg

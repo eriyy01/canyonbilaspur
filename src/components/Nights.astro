@@ -1,22 +1,33 @@
 ---
 import { Image } from 'astro:assets';
-import { posters, room } from '../data/frames';
-import { nights, contact, cta } from '../data/site';
+import { posters, room, almost, firstNight as firstNightPlate } from '../data/frames';
+import { nights, firstNight, contact, cta } from '../data/site';
 
 /*
 	The nights lead with the artwork.
 
-	Live music is the reason people come — it is in 8 of the 12 sampled posts,
-	and the opening Sufi Night outdrew a typical post by roughly twelve times.
-	So this section does what the previous one only described: it shows the
+	Live music is the reason people come — it is in half the account's posts,
+	and the opening Sufi Night outdrew a typical post by roughly twelve
+	times. So this section does what prose only describes: it shows the
 	three posters Canyon designed, at full fidelity, burnt-in typography and
-	all. Their art is the product. Reproducing it is both more honest and more
-	arresting than a paragraph describing it.
+	all. Their art is the product. Reproducing it is both more honest and
+	more arresting than a paragraph describing it.
 
 	The "Sufi Night" heading is Cormorant Garamond italic in gold —
 	distinct from the Fraunces display face, soulful but still clean
-	and readable. It appears here and nowhere else.
+	and readable. It appears on the nights pages and nowhere else.
+
+	`full` is the /nights page's own cut: the signature trio stays, and the
+	archive widens from three frames to six — the reel Canyon cut the
+	morning after the first Sufi night joins the grid, whose cover is its
+	own poster ("CANYON'S FIRST Sufi Night"), and whose caption and
+	like-count close the page the way their own feed does.
 */
+interface Props {
+	full?: boolean;
+}
+
+const { full = false } = Astro.props;
 ---
 
 <section id="nights" class="shell pt-[30px] pb-0 md:pt-28 md:pb-0">
@@ -50,16 +61,24 @@ import { nights, contact, cta } from '../data/site';
 				“{nights[0].blurb}”
 			</p>
 
-		<p class="mx-auto mt-6 max-w-md text-base leading-relaxed text-canyon-champagne/90 md:mx-0">
-				{nights[0].closes} Dates move week to week. Call ahead to catch the next
-				one, tables fill first.
+			<p class="mx-auto mt-6 max-w-md text-base leading-relaxed text-canyon-champagne/90 md:mx-0">
+				{nights[0].closes} Dates are announced on the account; book yours on
+				the line below.
 			</p>
-			{/* [caption] social proof: opening Sufi night drew 1,844 likes vs ~150 typical. */}
-			<p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-canyon-champagne/75 md:mx-0">
-				The opening Sufi night drew 12×
-				<br class="md:hidden" />the usual response.
-				<br class="hidden md:block" />That room fills fast.
-			</p>
+			{/*
+				[caption] social proof: the opening Sufi night reel drew
+				1,873 likes vs ~150 typical. Home-only — the /nights page
+				carries this same fact in full detail in the first-night
+				block below, and saying it twice on one page would read
+				like a boast, not a fact.
+			*/}
+			{
+				!full && (
+					<p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-canyon-champagne/75 md:mx-0">
+						The opening Sufi night drew 12× the usual response.
+					</p>
+				)
+			}
 
 			<a
 				href={`tel:${contact.tel}`}
@@ -67,7 +86,7 @@ import { nights, contact, cta } from '../data/site';
 			>
 				{cta.nights}
 				<svg
-					class="h-3.5 w-3.5"
+					class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
 					viewBox="0 0 24 24"
 					fill="none"
 					stroke="currentColor"
@@ -81,6 +100,45 @@ import { nights, contact, cta } from '../data/site';
 			</a>
 		</div>
 	</div>
+
+	{/* ── The first night, only where there is room for the story ───── */}
+	{
+		full && (
+			<div class="mt-20 grid items-center gap-10 md:mt-28 md:grid-cols-12 md:gap-12">
+			{/*
+				Text left, image right (owner-directed: "keep the text on the
+				left side, put the image on the right"). Same ink as before —
+				the block's eyebrow, their 05.09.26 quote, and the twelve-times
+				stat — just given the lead position over the plate that
+				illustrates it.
+			*/}
+			<div class="flex flex-col items-center text-center md:col-span-8 md:items-start md:text-left" data-reveal>
+				<p class="eyebrow text-body">{firstNight.eyebrow}</p>
+				<blockquote class="mt-5 max-w-2xl">
+					<p class="font-display text-quote leading-[1.15] tracking-[-0.02em] text-balance text-canyon-champagne italic">
+						“{firstNight.quote}”
+					</p>
+				</blockquote>
+				<p class="mt-5 max-w-md text-base leading-relaxed text-canyon-champagne/85">{firstNight.stat}</p>
+			</div>
+			<div class="md:col-span-4" data-reveal style="--reveal-delay: 90ms">
+				<figure>
+					<div class="overflow-hidden rounded-shell bg-canyon-ember">
+						<Image
+							src={firstNightPlate.src}
+							alt={firstNightPlate.alt}
+							widths={[320, 480, 640, 800]}
+							sizes="(min-width: 768px) 33vw, 92vw"
+							format="avif"
+							loading="lazy"
+							class={`${firstNightPlate.ratio} w-full object-cover`}
+						/>
+					</div>
+				</figure>
+			</div>
+		</div>
+		)
+	}
 
 	{/* ── The other two formats, as posters ─────────────────────────── */}
 	<ul class="mt-16 grid gap-8 md:mt-24 md:grid-cols-2 md:gap-10">
@@ -101,20 +159,16 @@ import { nights, contact, cta } from '../data/site';
 									class={`${art.ratio} w-full object-cover`}
 								/>
 							</div>
+
 							{/*
-				Name and one line. No format line: the Bollywood poster already
-				prints "featuring live music" and the Strings poster prints
-				"classy, melodic, effortless", so repeating either one here just
-				says the poster twice. The blurb is kept because it comes from
-				their caption, not from their artwork, and appears on neither.
-			*/}
+								Name and one line. No format line: the Bollywood poster
+								already prints "featuring live music" and the Strings
+								poster prints "classy, melodic, effortless", so repeating
+								either one here just says the poster twice. The blurb is
+								kept because it comes from their caption, not from their
+								artwork, and appears on neither.
+							*/}
 							<figcaption class="mt-5">
-								{/*
-									Supporting formats sit below the signature
-									(text-support / text-lede): h3 under the
-									section's h2, kept compact so both longer
-									names set cleanly.
-								*/}
 								<h3 class="font-display text-quote leading-[0.95] text-balance text-canyon-amber" translate="no">
 									{night.name}
 								</h3>
@@ -131,11 +185,18 @@ import { nights, contact, cta } from '../data/site';
 
 	{/* ── The room during a night ───────────────────────────────────── */}
 	<div class="mt-16 md:mt-24">
-		<p class="eyebrow text-body">Mid-song, on a weeknight</p>
-		<div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
+		{/* [caption DeHSXGVGodB] — "Last saturday was a little soulful."
+		    Every frame in this grid is that reel, so the label is its
+		    own first line, trimmed at the comma. A "weeknight" label
+		    would have contradicted the reel's own caption. */}
+		<p class="eyebrow soulful-line text-center">A little soulful</p>
+		<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
 			{
-				[room.crowd, room.beams, room.dholak].map((shot, i) => (
-					<figure data-reveal style={`--reveal-delay:${i * 70}ms`} class={i === 2 ? 'col-span-2 md:col-span-1' : undefined}>
+				(full
+					? [room.crowd, room.guests, room.band, room.dholak, room.beams, almost]
+					: [room.crowd, room.beams, room.dholak]
+				).map((shot, i) => (
+					<figure data-reveal style={`--reveal-delay:${i * 70}ms`} class={i === 2 && !full ? 'col-span-2 md:col-span-1' : undefined}>
 						<Image
 							src={shot.src}
 							alt={shot.alt}
@@ -151,3 +212,19 @@ import { nights, contact, cta } from '../data/site';
 		</div>
 	</div>
 </section>
+
+<style>
+	/*
+		"A little soulful" opened the room grid as eyebrow micro-type
+		(12px), which flattened the venue's own caption into a whisper.
+		Owner-directed: centred and sized as the section's opening line.
+		The scoped selector (class + this component's scope attribute) is
+		more specific than the plain .eyebrow rule in global.css, while
+		utilities applied beside .eyebrow lose that cascade — so the size
+		lives here, with the eyebrow identity (caps, tracking, amber)
+		kept intact.
+	*/
+	.soulful-line {
+		font-size: clamp(1.125rem, 0.85rem + 1vw, 1.5rem);
+	}
+</style>

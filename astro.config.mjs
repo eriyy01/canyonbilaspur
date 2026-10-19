@@ -18,13 +18,18 @@ export default defineConfig({
 	/*
 		The stylesheet is inlined rather than linked.
 
-		astro-critters was doing this before and doing it badly: it inlined 40.2 KB
+		astro-critters did this before and did it badly: it inlined 40.2 KB
 		of the 46.4 KB stylesheet into <head> *and* left a second, render-blocking
 		<link rel="stylesheet"> pointing at the same file, so the async trick was
-		defeated and 86.7 KB of CSS shipped for a 46.4 KB source. Critters pays for
-		itself on a site with several pages, where a shared sheet can be cached
-		across navigations. This is one page, so there is no second navigation to
-		help: `always` inlines the whole thing and there is no request left to block.
+		defeated and 86.7 KB of CSS shipped for a 46.4 KB source.
+
+		The site is seven pages now, which is where `always` needs its
+		justification several pages over: the sheet is ~11 KB brotli, and
+		re-shipping it inside each HTML response costs less — per page — than
+		the second request+cache round-trip it replaces, while keeping first
+		paint request-free on every page a guest opens. At a scale where the
+		sheet outgrew the HTML of a single route, `auto` (link + cache) would
+		become the right answer again; that scale is far away.
 	*/
 	build: {
 		inlineStylesheets: 'always',

@@ -1,0 +1,62 @@
+---
+/**
+ * The opener every page after the home page shares.
+ *
+ * One idea, carried over from the hero panel: the ember ground with its
+ * ochre wall-glow, so navigating deeper into the site keeps the same
+ * light falling on the type. The eyebrow sits above an h1 — on subpages
+ * the h1 belongs here, not in a section — and the lede below is the
+ * page's own line.
+ *
+ * Text-only by owner direction, mirroring the header's wordmark-only
+ * bar: the arch mark lives in the hero doorway and the footer lockup;
+ * these openers are type and glow alone. (A scoped rule can never reach
+ * a class passed through into a child component's own template anyway —
+ * the old faint mark rendered unsized at full ink for exactly that
+ * reason, so removal is also the honest fix.)
+ *
+ * The copy block is centred within the shell.
+ */
+interface Props {
+	eyebrow: string;
+	title: string;
+	lede?: string;
+}
+
+const { eyebrow, title, lede } = Astro.props;
+---
+
+<section class:list={['page-head']} aria-labelledby="page-head-heading">
+	<div class="shell">
+		<div class="mx-auto max-w-3xl py-16 text-center md:py-24" data-reveal>
+			<p class="eyebrow text-body">{eyebrow}</p>
+			<h1
+				id="page-head-heading"
+				class="page-title mt-4 font-display leading-[1.02] tracking-[-0.015em] text-balance text-canyon-champagne"
+			>
+				{title}
+			</h1>
+			{lede && <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-pretty text-canyon-champagne/85">{lede}</p>}
+			<slot />
+		</div>
+	</div>
+</section>
+
+<style>
+	/*
+		Same ground as the hero panel — one light, every page. With the
+		copy now centred, the glow hangs dead centre above it so the light
+		still falls where the type is.
+	*/
+	.page-head {
+		background-color: var(--color-canyon-ember);
+		background-image: radial-gradient(
+			64rem 40rem at 50% 12%,
+			color-mix(in oklab, var(--color-canyon-ochre) 16%, transparent),
+			transparent 62%
+		);
+		border-bottom: 1px solid var(--color-canyon-coal);
+		position: relative;
+		overflow: hidden;
+	}
+</style>

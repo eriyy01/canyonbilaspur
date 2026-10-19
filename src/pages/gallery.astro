@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHead from '../components/PageHead.astro';
+import Gallery from '../components/Gallery.astro';
+import InstagramStrip from '../components/InstagramStrip.astro';
+import Footer from '../components/Footer.astro';
+import BookingModal from '../components/BookingModal.astro';
+import { pages } from '../data/site';
+---
+
+{/*
+	/gallery — the widened set. Ten plates, none of them shown elsewhere on
+	this page (the closing strip is the social strip, which repeats across
+	pages by design). The section's own header is muted: the PageHead
+	already says "This is the room." — see Gallery's intro prop.
+*/}
+<Layout title={pages.gallery.title} description={pages.gallery.description}>
+	<Nav />
+
+	<main id="main" class="relative z-10">
+		<PageHead
+			eyebrow="The Gallery"
+			title="This is the room."
+			lede="Real photographs from the venue, not stock. Released night by night on the account."
+		/>
+
+		<Gallery intro={false} />
+
+		<InstagramStrip />
+	</main>
+
+	<Footer />
+	<BookingModal />
+</Layout>

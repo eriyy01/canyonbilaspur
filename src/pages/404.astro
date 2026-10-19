@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import BookingModal from '../components/BookingModal.astro';
+import CtaPill from '../components/CtaPill.astro';
+import { pages } from '../data/site';
+---
+
+{/*
+	404 — same ground, one column, two ways out. Copy is the page meta's
+	own description rather than a second line written for the occasion,
+	so nothing here can drift from `pages.notFound`.
+*/}
+<Layout title={pages.notFound.title} description={pages.notFound.description}>
+	<Nav />
+
+	<main id="main" class="relative z-10">
+		<section class="lost-panel">
+			<div class="shell flex min-h-[72svh] flex-col items-center justify-center py-20 text-center">
+				<p class="eyebrow text-body" data-reveal>404</p>
+				<h1
+					class="page-title mt-4 max-w-2xl font-display leading-[1.02] tracking-[-0.015em] text-balance text-canyon-champagne"
+					data-reveal
+				>
+					Lost in the canyon.
+				</h1>
+				<p class="mt-5 max-w-md text-lg leading-relaxed text-pretty text-canyon-champagne/85" data-reveal style="--reveal-delay: 90ms">
+					That page is not here. The nights, the table and the map are.
+				</p>
+
+				<div class="mt-9 flex flex-col items-center gap-3 sm:flex-row" data-reveal style="--reveal-delay: 180ms">
+					<a
+						href="/"
+						class="inline-flex min-h-[3rem] items-center justify-center rounded-lg border border-canyon-coal px-6 text-sm font-medium text-canyon-champagne transition-colors duration-300 hover:border-canyon-amber/60 hover:text-canyon-amber"
+					>
+						Go Home
+					</a>
+					<CtaPill label="Book a Table" />
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+	<BookingModal />
+</Layout>
+
+<style>
+	/*
+		The same ground as the hero panel (Hero.astro) and the bar
+		(Nav.astro): ember with the ochre wall-glow, one light across the
+		site. Restated here because scoped styles do not travel between
+		components — and the 404 wants the panel, not a copy of the page.
+	*/
+	.lost-panel {
+		background-color: var(--color-canyon-ember);
+		background-image: radial-gradient(
+			70rem 45rem at 78% 18%,
+			color-mix(in oklab, var(--color-canyon-ochre) 16%, transparent),
+			transparent 62%
+		);
+		border-bottom: 1px solid var(--color-canyon-coal);
+	}
+</style>

@@ -9,6 +9,22 @@
  *
  * Videos have no frames to take, so we use their cover art only.
  *
+ * LEGACY POSTS: the account sits at exactly 32 posts, and the venue deletes
+ * posts as their night passes — `Dd-1JjDjonC` ("The sufi night is almost
+ * here.", both booking numbers) and `DcGTQDGmlPi` ("We know you wanna taste
+ * these ✨") were both taken down between scrapes, yet the first is the
+ * signature plate of the nights pages and the second is the gallery's
+ * wide taste-plate. Their files are already on disk, so legacy entries name
+ * them directly instead of carrying expired signed URLs — `download()` skips
+ * existing files, and if a file ever went missing the fake URL fails loudly
+ * rather than silently building a hole.
+ *
+ * Timestamps are sort keys only. `likesCount: 0` means "unknown" here —
+ * the likes line is manifest metadata and renders nowhere.
+ *
+ * Before launch, confirm the venue is happy reusing art from posts they
+ * took down, or hand them these plates to replace.
+ *
  * Usage: node scripts/download-media.mjs
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
@@ -21,9 +37,14 @@ const OUT = resolve(ROOT, 'src/assets/images');
 mkdirSync(OUT, { recursive: true });
 
 const profile = JSON.parse(readFileSync(resolve(ROOT, 'data/instagram.json'), 'utf8'));
-const posts = [...(profile.latestPosts ?? [])].sort((a, b) =>
-	a.timestamp.localeCompare(b.timestamp)
-);
+// The scrape used to be a profile object with a `latestPosts` array; the
+// modern scraper returns the posts flat. Both shapes still feed this script.
+const live = Array.isArray(profile) ? profile : profile.latestPosts;
+// Posts deleted by the venue but still shown by the site, see the header.
+const LEGACY = existsSync(resolve(ROOT, 'data/legacy-posts.json'))
+	? JSON.parse(readFileSync(resolve(ROOT, 'data/legacy-posts.json'), 'utf8'))
+	: [];
+const posts = [...live, ...LEGACY].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 
 /** Turn a caption into a usable alt description, first line only. */
 function altFrom(caption, type) {
@@ -57,10 +78,15 @@ let skipped = 0;
 const failures = [];
 
 for (const post of posts) {
-	const urls = [];
-	// Cover art always counts; carousel images add to it.
-	if (post.displayUrl) urls.push(post.displayUrl);
-	for (const u of post.images ?? []) if (!urls.includes(u)) urls.push(u);
+	// Legacy entries carry the file list directly; live posts come down
+	// displayUrl first (cover art always counts), then carousel adds.
+	let urls = [];
+	if (post.files) {
+		urls = post.files.map((name) => `https://archive.invalid/${name}`);
+	} else {
+		if (post.displayUrl) urls.push(post.displayUrl);
+		for (const u of post.images ?? []) if (!urls.includes(u)) urls.push(u);
+	}
 
 	const files = [];
 	for (let i = 0; i < urls.length; i++) {

@@ -1,0 +1,89 @@
+---
+import Photo from './Photo.astro';
+import { setups } from '../data/setups';
+import { celebrate } from '../data/site';
+
+/*
+	The teaser that sells the destination page.
+
+	HOME ECHO RULE: a teaser may show up to three plates from its destination
+	page, marked ⏏ in the setups ledger (src/data/setups.ts) — showing
+	*other* photographs here would be a bait-and-switch, since the guest who
+	taps through should find these tables again on the other side. The three
+	echoed plates are candleNight, candleDrapes and drapeDay (the owner
+	directed the lead swap: candleNight opens the row, the petal heart now
+	appears only on /celebrate); heart and petalsWide are what give the
+	destination page something new in hand.
+
+	RENDER: the owner asked this row to be three straight portraits of the
+	same size, so every plate sits in one 4:5 box. That is deliberately the
+	only shared ratio that keeps drapeDay's watermark treatment whole (4:5,
+	object-top — see setups.ts). candleNight and candleDrapes take a centre
+	crop to match: a deviation from setups.ts's "their own ratios" law that is
+	owner-directed for this row — the candlelit table stays centred in its
+	frame either way.
+
+	Placement: after the tour, before the kitchen. The room walk ends on
+	"this is where you sit", so the setups answer it directly — here is a
+	sitting that is built for you.
+*/
+const echoed = [setups.candleNight, setups.candleDrapes, setups.drapeDay] as const;
+---
+
+<section id="celebrate" class="pt-16 md:pt-20" aria-labelledby="celebrate-heading">
+	<div class="shell">
+		<div class="m-auto flex max-w-3xl flex-col items-center text-center" data-reveal>
+			<p class="eyebrow text-body">{celebrate.eyebrow}</p>
+			<h2
+				id="celebrate-heading"
+				class="mt-4 max-w-2xl font-display text-heading leading-[1.04] tracking-[-0.02em] text-balance text-canyon-champagne"
+			>
+				{celebrate.heading}
+			</h2>
+			<p class="mt-5 max-w-xl text-lg leading-relaxed text-pretty text-canyon-champagne/85">
+				{celebrate.lede}
+			</p>
+		</div>
+
+		<ul class="mt-14 grid grid-cols-1 items-start gap-6 sm:grid-cols-3 md:mt-20 md:gap-8">
+			{
+				echoed.map((plate, i) => (
+					<li data-reveal style={`--reveal-delay:${i * 70}ms`}>
+						<Photo
+							src={plate.src}
+							alt={plate.alt}
+							ratio='aspect-[4/5]'
+							position={'position' in plate ? plate.position : undefined}
+							zoom
+							widths={[420, 640, 900]}
+							sizes="(min-width: 640px) 30vw, 92vw"
+						/>
+					</li>
+				))
+			}
+		</ul>
+
+		{/* One hand-off — "Or call reservations on …" came off the teaser at
+			the owner's ask; /celebrate keeps both of its own CTAs. */}
+		<div class="mt-12 flex justify-center md:mt-14" data-reveal>
+			<a
+				href="/celebrate"
+				class="group inline-flex min-h-[3rem] items-center gap-3 rounded-lg border border-canyon-amber/50 px-8 text-sm font-semibold text-canyon-amber transition-colors duration-300 hover:border-canyon-amber hover:bg-canyon-amber hover:text-canyon-void"
+			>
+				See the setups
+				<svg
+					class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M5 12h14M13 6l6 6-6 6"></path>
+				</svg>
+			</a>
+		</div>
+	</div>
+</section>

@@ -34,13 +34,13 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 -->
 <dialog
 	id="booking-dialog"
-		class="m-auto flex max-h-[calc(100dvh-2rem)] w-[min(30rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-canyon-coal bg-canyon-ember p-0 text-canyon-champagne backdrop:bg-canyon-void/80 backdrop:backdrop-blur-sm"
+	class="booking-dialog m-auto flex max-h-[calc(100dvh-2rem)] w-[min(30rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-canyon-coal bg-canyon-ember p-0 text-canyon-champagne backdrop:bg-canyon-void/80 backdrop:backdrop-blur-sm"
 	aria-labelledby="booking-title"
 	aria-describedby="booking-subtitle"
 >
 	<form id="booking-form" method="dialog" class="flex min-h-0 flex-col">
 		<div
-			class="flex shrink-0 items-start justify-between gap-4 border-b border-canyon-coal px-7 pt-6 pb-5 md:px-8 md:pt-7"
+			class="flex shrink-0 items-start justify-between gap-4 border-b border-canyon-coal px-7 pt-4 pb-3.5 md:px-8 md:pt-4"
 		>
 			<div>
 				<h2 id="booking-title" class="font-display text-support tracking-[-0.02em] text-balance">
@@ -70,7 +70,7 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 			</button>
 		</div>
 
-		<div class="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-7 pt-6 pb-7 md:px-8 md:pt-7 md:pb-8">
+		<div class="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-7 pt-4 pb-4 md:px-8 md:pt-4 md:pb-4">
 			<div>
 				<label for="booking-name" class="mb-2 block text-sm font-medium text-canyon-champagne">
 					Name
@@ -174,7 +174,7 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 			</div>
 		</div>
 
-		<div class="shrink-0 px-7 pt-5 pb-5 md:px-8">
+		<div class="shrink-0 px-7 pt-3 pb-4 md:px-8">
 			{/*
 				Inline send-failure notice. Replaces the old alert() — a blocked
 				WhatsApp popup keeps the guest's details and explains the fix
@@ -184,7 +184,7 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 			<p id="booking-error" role="alert" class="mb-3 hidden text-center text-sm leading-relaxed text-canyon-champagne"></p>
 			<button
 				type="submit"
-				class="w-full rounded-lg bg-canyon-amber px-6 py-4 text-base font-semibold text-canyon-void transition-[background-color,transform,filter] duration-200 hover:brightness-110 active:scale-[0.98]"
+				class="w-full rounded-lg bg-canyon-amber px-6 py-3.5 text-base font-semibold text-canyon-void transition-[background-color,transform,filter] duration-200 hover:brightness-110 active:scale-[0.98]"
 			>
 				Send booking request
 			</button>
@@ -197,20 +197,20 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 			Pinned below the submit button rather than scrolled with the fields —
 			the fallback for a blocked popup has to be reachable without hunting.
 		*/}
-		<div class="shrink-0 border-t border-canyon-coal px-7 pt-4 pb-6 text-center md:px-8 md:pb-7">
+		<div class="shrink-0 border-t border-canyon-coal px-7 pt-3 pb-4 text-center md:px-8 md:pb-4">
 			<p class="text-xs text-canyon-smoke">Prefer to talk? Call either line</p>
 			<p class="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
 				<a
 					href={`tel:${contact.resTel}`}
-					class="font-medium text-canyon-amber hover:underline"
-					aria-label={`Call reservations on ${contact.resDisplay}`}
+					class="inline-block py-3 -my-3 font-medium text-canyon-amber hover:underline"
+					aria-label={`Call reservations on +91 ${contact.resDisplay}`}
 				>
 					+91 {contact.resDisplay}
 				</a>
 				<a
 					href={`tel:${contact.tel}`}
-					class="font-medium text-canyon-amber hover:underline"
-					aria-label={`Call ${contact.telDisplay}`}
+					class="inline-block py-3 -my-3 font-medium text-canyon-amber hover:underline"
+					aria-label={`Call +91 ${contact.telDisplay}`}
 				>
 					+91 {contact.telDisplay}
 				</a>
@@ -218,6 +218,43 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 		</div>
 	</form>
 </dialog>
+
+<style>
+	/*
+		Entry, once. The dialog opens into the top layer (native dialog),
+		where ::backdrop and the box animate independently; keyframes rather
+		than @starting-style because they fall back cleanly — a browser
+		without the syntax just shows the dialog, and prefers-reduced-motion
+		(global.css) zeroes animation to the finished frame. The exit is
+		instant: closing sets display:none, so a fade-out would be cut
+		behind the drop anyway — inventing a "keep-open while it fades"
+		state for one frame is not worth its complexity.
+
+		animation-delay earns its 40ms here: the backdrop's 360ms fade lands
+		first, so the box appears on a dimmed field instead of popping onto
+		the raw page.
+	*/
+	dialog.booking-dialog[open] {
+		animation: booking-in 420ms var(--ease-out-soft) 40ms both;
+	}
+
+	dialog.booking-dialog::backdrop {
+		animation: booking-backdrop-in 360ms var(--ease-out-soft) both;
+	}
+
+	@keyframes booking-in {
+		from {
+			opacity: 0;
+			transform: translateY(14px) scale(0.985);
+		}
+	}
+
+	@keyframes booking-backdrop-in {
+		from {
+			opacity: 0;
+		}
+	}
+</style>
 
 <script>
 	// Frontmatter imports are NOT in scope inside a bundled <script>.
@@ -404,11 +441,26 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 			`Party size: ${guests}`,
 		].join('\n');
 
+		/*
+			window.open with `noopener` in the feature string must return
+			null by spec — so the old _blank+features call made every
+			submission look "blocked" even while the tab opened, and the
+			dialog never closed. Open plainly, then sever the opener
+			ourselves; a null return now genuinely means the browser
+			blocked the popup.
+		*/
 		const wa = window.open(
 			`https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(message)}`,
-			'_blank',
-			'noopener,noreferrer'
+			'_blank'
 		);
+		if (wa) {
+			try {
+				// keep the handoff opener-free without lying about success
+				wa.opener = null;
+			} catch {
+				/* impersonation-resistant browsers refuse; the tab still works */
+			}
+		}
 
 		/*
 			A blocked popup means the request was never sent. Previously the form
@@ -420,7 +472,7 @@ const selectField = `${field} appearance-none [color-scheme:dark]`;
 			const error = document.getElementById('booking-error');
 			if (error) {
 				error.textContent =
-					`Your browser blocked the WhatsApp window — nothing was sent. Call +91 ${contact.telDisplay} and we'll book it for you.`;
+					`Your browser blocked the WhatsApp window and nothing was sent. Call +91 ${contact.telDisplay} and we'll book it for you.`;
 				error.classList.remove('hidden');
 			}
 			return;

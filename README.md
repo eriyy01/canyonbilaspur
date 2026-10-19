@@ -4,7 +4,8 @@ Rooftop multicuisine lounge and live music venue, Bilaspur.
 `2nd floor, Hotel Intercity International, Jagmal Chowk, Bilaspur`
 `Cocktails. Cuisine. Conversations.`
 
-Single-page Astro site. See `docs/DESIGN.md` for the design system.
+Multi-page Astro site: `/`, `/nights`, `/celebrate`, `/kitchen`, `/gallery`,
+`/visit`, plus a branded 404. See `docs/DESIGN.md` for the design system.
 
 ## Commands
 
@@ -21,23 +22,25 @@ Single-page Astro site. See `docs/DESIGN.md` for the design system.
 ```text
 /
 ├── data/
-│   └── instagram.json      # provenance scrape (@canyonbilaspur) — copy source, not imported at build
+│   ├── instagram.json        # latest scrape (@canyonbilaspur) — copy source, not imported at build
+│   └── legacy-posts.json     # posts the venue deleted; files still shown (see download-media.mjs)
 ├── docs/
-│   └── DESIGN.md           # design system + content model
+│   └── DESIGN.md             # design system + content model
 ├── public/
 │   ├── favicon.svg
-│   ├── og.jpg              # stable og:image (entrance plate)
+│   ├── og.jpg                # stable og:image (entrance plate)
 │   └── robots.txt
 ├── scripts/
-│   ├── fetch-instagram.mjs # re-scrape profile via Apify (needs APIFY_API_TOKEN in .env)
-│   └── download-media.mjs  # download scrape media -> src/assets/images + src/data/media.ts
+│   ├── scrape-profile.mjs    # re-scrape profile via Apify (needs APIFY_API_TOKEN in .env)
+│   └── download-media.mjs    # scrape media -> src/assets/images + src/data/media.ts
 └── src/
-    ├── assets/images/      # local venue photography (Astro-optimised)
-    ├── components/         # one section per file, composed in pages/index.astro
-    ├── data/               # site.ts (copy) + frames.ts (art direction) + media.ts (generated)
+    ├── assets/images/        # local venue photography (Astro-optimised)
+    ├── components/           # one section per file, composed in pages/
+    ├── data/                 # site.ts (copy) + frames.ts (art direction) +
+    │                         #   setups.ts (venue photographs) + media.ts (generated)
     ├── layouts/Layout.astro
-    ├── pages/index.astro
-    └── styles/global.css   # Tailwind v4 CSS-first config (@theme)
+    ├── pages/                # index, nights, celebrate, kitchen, gallery, visit, 404
+    └── styles/global.css     # Tailwind v4 CSS-first config (@theme)
 ```
 
 ## Notes
@@ -45,6 +48,13 @@ Single-page Astro site. See `docs/DESIGN.md` for the design system.
 - Code audit only — no Playwright, no screenshots, no visual audit (see `AGENTS.md`).
 - Copy rule: every line is either verbatim from their own posts/artwork or a
   structural label. Never invent claims — see the provenance header in `src/data/site.ts`.
+- The celebration-set photographs in `src/data/setups.ts` came from the venue
+  directly (not the Instagram pipeline), so their alt text is written from the
+  photographs themselves.
+- The account is exactly 32 posts deep and the venue deletes posts as their
+  nights pass. Plates from deleted posts (`Dd-1JjDjonC`, `DcGTQDGmlPi`) live on
+  via `data/legacy-posts.json` — confirm with the owner before launch, or hand
+  them those slots to replace.
 - Hours, menu prices and geo are omitted until verified by the owner.
 
 ## Deploy

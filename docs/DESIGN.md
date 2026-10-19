@@ -9,32 +9,37 @@
 ## 0. What the business actually is
 
 Established from a real scrape of @canyonbilaspur (`data/instagram.json`,
-12 posts, 6 Sep – 5 Oct 2026, 4,427 likes).
+32 posts, 6 Jun – 18 Oct 2026, `scripts/scrape-profile.mjs`). Two posts that
+were deleted from the account survive on disk via `data/legacy-posts.json`
+(see §9).
 
-**Canyon is a live music venue with a kitchen attached.** Live music appears in
-**8 of 12 posts**. The signature is **Sufi Night** — 5 of 12 posts, with live
-dholak and keyboard. Two other recurring formats: **Bollywood Night** and
-**Strings Under The Stars** (violin).
+**Canyon is a live music venue with a kitchen attached.** Live music is the
+recurring spine of the account: **Sufi Night**, **Bollywood Night** and
+**Strings Under The Stars (violin)** return as three named formats. The
+engagement confirms the ranking:
 
-The engagement confirms this is what people come for:
+| Plate | Code | Likes |
+| --- | --- | --- |
+| First Sufi Night reel (6 Sep) | `Dc8l4SqKBcZ` | **1,873** |
+| "Got plans? change them." neon reel (30 Aug) | `DcqJegxqDGM` | 1,613 |
+| Vision reel (27 Aug) | `DciWfZoivHp` | 1,222 |
+| Sufi Night 3 Oct invite (29 Sep) | `Dd3zmVwiphv` | 959 |
+| Bollywood recap (18 Sep) | `DdblVqkOZ_7` | 706 |
+| *typical post* | | *~150* |
 
-| Post | Likes |
-| --- | --- |
-| First Sufi Night (5 Sep) | **1,844** |
-| Bollywood recap (18 Sep) | 673 |
-| Sufi Night recap (5 Oct) | 583 |
-| *typical post* | *~150* |
+The opening Sufi night outdrew a typical post by ~12×. **The site therefore
+leads with the nights, not the menu.** An earlier version of this document
+treated Canyon as a restaurant with a bar; that was wrong.
 
-The opening Sufi night outdrew a typical post by ~12×. **The site therefore leads
-with the nights, not the menu.** An earlier version of this document treated
-Canyon as a restaurant with a bar; that was wrong.
+Like counts drift upward as the account ages; re-run the scrape rather than
+trusting a month-old table.
 
-**Verified from their own captions:** `8 PM onwards` appears as the start time in
-three separate event posts. Both phone numbers appear in their own booking posts,
-with `97502 88888` labelled "Book your table".
+**Verified from their own captions:** `8 PM onwards` appears as the start
+time on three separate event posts and two posters. Both phone numbers
+appear in their own booking posts, with `97502 88888` labelled
+"Book your table:" on the 3 Oct Sufi post.
 
-**Not verified anywhere:** closing time, menu prices, and whether any dish is
-currently served — see §3.
+**Not verified anywhere:** closing time, menu prices. See §8.
 
 ### Voice
 
@@ -43,7 +48,9 @@ Their captions are the brand: warm, wry, unhurried, never shouty.
 - "Come for the Sufi. Stay for the mood."
 - "Sip first. Worry later."
 - "After the rain, Canyon just hits different."
-- "Money can't buy happiness, but it can buy a great dinner at Canyon. Close enough."
+- "Money can't buy happiness, but it can buy a great dinner at Canyon.
+  And honestly, close enough ✨" (caption) / "…it can buy the best Dinner"
+  (burnt-in on the same post's artwork)
 
 **Rule: these are real quotes from real posts.** Never complete a truncated
 quote, and never invent one. An earlier draft put a fabricated
@@ -53,131 +60,185 @@ quote, and never invent one. An earlier draft put a fabricated
 
 ## 1. Content provenance
 
-Every value in `src/data/site.ts` carries a provenance tag: `[bio]`, `[caption]`,
-`[reel]`, or `[inferred]`. Adding a claim without a tag is how the slop got in
-the first time. `[reel]` means the dish came from a collaborating food account,
-not from Canyon's own posts. `[inferred]` means my judgement, owner must confirm.
+Every copy value in `src/data/site.ts`, `src/data/frames.ts` and
+`src/data/setups.ts` carries a provenance tag. Adding a claim without a tag
+is how the slop got in the first time. Tags in use:
+
+- `[bio]` — verbatim from the profile biography (captured in the committed
+  scrape under `git show HEAD:data/instagram.json`).
+- `[caption]` — verbatim from a post caption (`data/instagram.json`,
+  quoted whole or trimmed at a comma).
+- `[post …]` / `[photo …]` — a specific date's post legible in text or art.
+- `[artwork]` — burnt-in type legible on their own designed plates (the
+  poster is published brand copy; quoting it is quoting them).
+- `[sidecar …]` — plates from `data/legacy-posts.json` (posts since deleted).
+- `[poster]` — the three night-format posters reproduced at full fidelity.
+
+Structural labels (nav items, headings, form fields, section eyebrows) are
+the only exception — they describe the interface, not the business.
+
+Deleted posts are not gone: `data/legacy-posts.json` keeps their captions and
+the download script keeps their media. Any new copy line from a deleted post
+must say so via `[sidecar]`.
 
 ---
 
-## 1. Brand Positioning
+## 2. Brand Positioning
 
-Canyon is a **rooftop lounge**, not a fast-casual restaurant and not a night club. It sits
-in the premium-but-approachable middle: the kind of place a group books for a birthday,
-where the food has to be genuinely good and the ambience has to carry the evening.
+Canyon is a **rooftop lounge**, not a fast-casual restaurant and not a night
+club. It sits in the premium-but-approachable middle: the kind of place a
+group books for a birthday, where the food has to be genuinely good and the
+ambience has to carry the evening.
 
 The Instagram voice is the brand voice, and it is consistent:
 
 | Signal | What it says |
 | --- | --- |
 | "Cocktails. Cuisine. Conversations." | Three pillars, in that order. Nightlife-capable, food-forward, social. |
-| "Bollywood hits, good…" | Live music / DJ nights. The venue has a pulse after 8pm. |
-| "You & food 🤍" | Warm, personal, hand-made. Not corporate. |
-| "Vatavaran · Events 👀" | Private events and banquets. A real revenue line. |
+| "Bollywood hits, good…" | Live music nights. The venue has a pulse after 8pm. |
 | "Now Open" | Recently launched. Hungry, not established. |
 
-**Voice:** confident and short. Conversational, never formal. Uses the kind of phrasing a
-friend texts you. Occasional emoji in marketing copy, never in UI chrome.
+**Voice:** confident and short. Conversational, never formal. Uses the kind
+of phrasing a friend texts you. Occasional emoji in captions, never in UI
+chrome.
 
 **Three pillars, used as the site's spine:**
 1. **Cocktails** — bar programme, mocktails, nightlife
-2. **Cuisine** — multicuisine kitchen (see §3)
-3. **Conversations** — ambience, events, long evenings
+2. **Cuisine** — multicuisine kitchen (see §4)
+3. **Conversations** — ambience, live nights, long evenings
+
+> Historical note: an interim version of this table claimed a
+> "Vatavaran · Events 👀" signal and a "You & food 🤍" signal. **Neither
+> string exists in the bio or in any of the 32 scraped captions.** They were
+> fabrication, and every trace of "Vatavaran" on the site is gone; the
+> occasions page opens on a caption line instead
+> (`celebrate.eyebrow` ← [caption Deovc0yDlxE]).
 
 ---
 
-## 2. Visual Direction
+## 3. Visual Direction
 
-**The reference image is an evening rooftop**: warm amber and gold light spilling across
-a dark sky, deep shadows, glassware catching highlights, a city that is still glowing
-below. Everything below is derived from that.
+The reference is an evening rooftop and the on-site photograph set itself:
+warm amber and gold light over deep shadow. Everything below is derived from
+that. The reference site for structure and restraint is
+`https://openhousecafe.in/` — typographic panel hero, info strip, feature
+cards, rooms walked as sections, one clean reservation close.
 
 ### Colour
 
-Dark, warm, and low-lit. The page should feel like the inside of the venue at 9pm.
+Dark, warm, and low-lit. The page should feel like the inside of the venue at
+9pm. Current tokens (`src/styles/global.css` `@theme`):
 
 | Token | Value | Role |
 | --- | --- | --- |
 | `canyon-void` | `#0a0908` | Page background. Near-black with a warm cast, never pure `#000`. |
-| `canyon-ember` | `#12100e` | Raised surfaces: cards, nav, footer, hero panel. |
+| `canyon-ember` | `#12100e` | Raised surfaces: cards, nav, footer, hero panel, page openers. |
 | `canyon-coal` | `#1f1b16` | Subtle borders, dividers, inactive fills. |
 | `canyon-smoke` | `#a79f94` | Secondary text. Warm grey, never `#999`. |
-| `canyon-champagne` | `#f4ede2` | Body text and headings. Warm off-white, not `#FFF` — pure white is harsh on dark. |
-| `canyon-amber` | `#e0a13c` | Primary accent. Signature action colour, links, highlights. |
-| `canyon-gold` | `#be8a2c` | Deeper gold. Gradient partner for `canyon-amber`, hover state for amber fills. |
-| `canyon-ochre` | `#c8912e` | The entrance plaster wall. Used as a surface tint only, never text. |
-| `canyon-night` | `#17233c` | The galaxy ceiling. Only ever behind the oculus photography / page glow. |
-| `canyon-terracotta` | `#B4553A` | Rare warm accent. Used for event/highlight states only. |
+| `canyon-champagne` | `#f4ede2` | Body text and headings. Warm off-white, not `#FFF`. |
+| `canyon-amber` | `#e0a13c` | Primary accent. Signature action colour. |
+| `canyon-gold` | `#be8a2c` | Deeper gold. Gradient partner for `canyon-amber`. |
+| `canyon-ochre` | `#c8912e` | The entrance plaster wall. Surface tint only, never text. |
+| `canyon-night` | `#17233c` | The galaxy ceiling. Only behind the oculus photography / page glow. |
+| `canyon-terracotta` | `#b4553a` | Rare warm accent. Reserved. |
 
 **Rules:**
 - No pure black, no pure white. The venue is dim; the site matches.
 - Amber is the *only* accent that carries a call to action. Gold is decoration.
-- Body text is `canyon-smoke`; only headings and interactive text use `canyon-champagne`.
+- Body text is `canyon-smoke`/champagne mixtures; only headings and
+  interactive text use full `canyon-champagne`.
 - Never place `canyon-amber` text on `canyon-amber` background.
-- Target contrast: body text ≥ 7:1, large headings ≥ 4.5:1, accent text ≥ 4.5:1.
+- Target contrast: body text ≥ 7:1, large headings ≥ 4.5:1, accent ≥ 4.5:1.
 
 ### Typography
 
-A serif for display, a clean sans for UI. The contrast is what makes it read as
-"premium" rather than "template". Both self-hosted via `@fontsource` — no runtime
-requests to Google Fonts.
+A serif for display, a clean sans for UI. The contrast is what makes it read
+as "premium" rather than "template". Three families, self-hosted woff2 via
+Astro's `fonts` config with metric-matched fallbacks — no runtime requests:
 
-| Role | Family | Use |
+| Role | Family | Wire-up |
 | --- | --- | --- |
-| Display | `Fraunces` (variable, optical size) | Hero, section headings, prices |
-| Body / UI | `Plus Jakarta Sans` (variable) | Paragraphs, nav, buttons, forms |
-| Sufi nights only | `UnifrakturMaguntia` | The "Sufi Night" heading, matching their own posters. Never UI or body copy. |
-| Eyebrow | Body family, uppercase, `0.18em` tracking | Section labels, kickers |
+| Display | `Fraunces` (variable wght, local files) | `--font-canyon-display` → `--font-display`; preloaded |
+| Body / UI | `Plus Jakarta Sans` (variable) | `--font-canyon-body` → `--font-sans`; preloaded |
+| Sufi heading | `Cormorant Garamond` italic 500 | `--font-canyon-sufi` → `--font-sufi`; **no preload** (renders once, below the fold) |
 
-- Hero display clamps `text-5xl` → `text-8xl`, tight tracking (`-0.02em`), `leading-[0.95]`.
-- Body copy maxes at `max-w-prose`. Line height `1.7` for paragraphs.
-- Eyebrows are `text-xs`, uppercase, `canyon-amber`, always paired with a following heading.
-- Prices set in `Fraunces` with `tabular-nums` so columns align.
+- Hero greeting sets `--text-hero: clamp(3rem, min(8vw, 10svh), 6rem)` —
+  capped against svh so a short viewport wins over the width axis.
+- Section headings use the shared tokens (`--text-title`, `--text-heading`,
+  `--text-support`); page openers use `.page-title`
+  (`clamp(2.4rem, min(7vw, 9svh), 4.25rem)`).
+- Body copy maxes at `max-w-md`/`max-w-xl` in component context.
+  Line-height `1.65` site-wide.
+- Eyebrows are the `.eyebrow` component: `--text-micro`, uppercase,
+  `canyon-amber`, always paired with a following heading.
+- No prices anywhere, so no tabular price columns; phone numerals set
+  `tabular-nums`.
 
 ### Spacing & Shape
 
-- Section padding: `py-24` mobile, `py-32` desktop.
-- Cards: `rounded-2xl`. Buttons: `rounded-full`. Images: `rounded-3xl` on feature blocks.
-- Borders are `1px canyon-coal`, not shadows. Depth comes from background steps.
+- `.shell` — one shared gutter (`max-width: 78rem`, `1.5rem`/`2.5rem`
+  padding) for the whole site, so vertical rhythm survives.
+- Sections: `py-20` mobile, `py-24/28` desktop via the Section shell or
+  explicit tokens.
+- Frames: `rounded-shell` (1.5rem) with the inset bezel `rounded-core`
+  (`calc(--radius-shell - 0.3125rem)`), never `rounded-3xl` per-page.
+- Buttons: `rounded-md` (hero, flat) / `rounded-lg` (pill CTAs, ledger
+  links). Borders are `1px canyon-coal`, not shadows.
 
 ### Imagery
 
-- Warm, dim, high-grain photos. Shot at night, from slightly above, people mid-conversation.
-- Overlay `linear-gradient(to top, canyon-void/90, transparent)` on every photo so text
-  stays legible without exception.
-- Never use light-background photos. They destroy the mood.
-- Image aspect ratios are fixed (`4/5`, `16/9`, `1/1`) to prevent layout shift.
+- The plate is the frame at its **own** ratio — 4:5 posts, 9:16 reels — so
+  `object-cover` has nothing to remove and the burnt-in typography survives
+  whole (see `src/data/frames.ts`). There is no text-over-photo scrim
+  anywhere: type never sits on a photograph.
+- The one exception is `setups.drapeDay`'s watermark crop, documented in
+  `src/data/setups.ts`.
+- The entrance sign is boxed as an arch (Photo's `arch` treatment) because
+  the photograph itself is an arch.
+- Warm, dim, high-grain photos; the global body `::after` grain (SVG
+  turbulence, 3% opacity, `z-40`) sits over everything else.
 
 ### Motion
 
-- 150–400ms, `ease-out`. Nothing bounces.
-- Fade + 16px rise on scroll reveal, staggered ~60ms.
-- Every animation gated behind `motion-reduce:` variants.
-- `prefers-reduced-motion` removes transforms entirely, keeps opacity.
+- Reveal: 16px rise + opacity, 480ms `--ease-out-soft`, staggered
+  `--reveal-delay` per item; one IntersectionObserver in Layout.
+- Hero: one-time CSS entrance (`hero-rise` sequence with inline
+  `--hero-delay`; `hero-glow` breathing at 9s). Runs once on load —
+  arrival is the greeting, not a scroll reveal.
+- Booking dialog: `booking-in` / `booking-backdrop-in` keyframes, 40ms
+  staged delay, `both` fill; exit is instant (display:none on close).
+- `prefers-reduced-motion: reduce` zeroes reveals to the finished state,
+  kills smooth scroll, and a global killer sets every animation to 0.01ms /
+  one iteration / zero delay, so all keyframes resolve instantly to their
+  final frame.
 
 ---
 
-## 3. Content Model
+## 4. Content Model
 
-### Cuisine categories
+### Cuisine categories (as served — the board in `Kitchen.astro`)
 
-Taken from actual menu signals on the account — pizza, sushi, pasta, Chinese, kebabs,
-BBQ, Korean fried chicken, peri peri fries, fish fingers.
+- **Italian** — Pizza, Pasta
+- **Asian** — Sushi, Korean Fried Chicken, Chicken Noodles
+- **Grill** — Kathi Kebab, BBQ
+- **Small Plates** — Peri Peri Fries, Fish Fingers, Veg Lollipop, Egg Wrap
 
-- Italian — Pizza, Pasta
-- Asian — Sushi, Chinese (noodles, fried rice), Korean fried chicken
-- Grill & Tandoor — Kebab, Tikka, BBQ
-- Bar — Cocktails, Mocktails
-- Small plates — Peri peri fries, fish fingers, veg lollipop
+> Prices are **not** published anywhere on the account and are not invented.
+> The board is categories + signature dishes, with the price list routed to
+> a phone number. It says so, plainly, under the board.
 
-> Menu item pricing is **not** published on the Instagram account and could not be verified.
-> The build must not invent prices. Menu is presented as categories + signature dishes,
-> with the call to action routed to a phone booking.
+### The celebrations product
+
+Five photographs the venue shot themselves (WhatsApp, 16 Oct 2026) — the
+petal heart, drape tables, candlelit setups — plus the occasion formats they
+promote (birthdays, anniversaries, group evenings). `/celebrate` leads with
+those setups; the home page teases three of the five plates
+(⏏ echo rule in `src/data/setups.ts`).
 
 ### Business facts
 
-Verified directly against the Instagram profile (@canyonbilaspur), confirmed by
-the owner on 6 Oct 2026. Nothing else should be stated as fact.
+Verified directly against the Instagram profile and their own posts; the
+identity block in `src/data/site.ts` carries the per-field tags:
 
 | Field | Value |
 | --- | --- |
@@ -187,165 +248,210 @@ the owner on 6 Oct 2026. Nothing else should be stated as fact.
 | Address | 2nd floor, Hotel Intercity International, Jagmal Chowk, Bilaspur |
 | Phone | +91 96984 21000 |
 | Reservations | +91 97502 88888 |
-| Hours | **Unverified — confirm with the owner before publishing** |
-| Instagram | @canyonbilaspur — 32 posts, 2,161 followers, 22 following |
-| Maps | `maps.app.goo.gl/YfqA5Dak54ywpmpM6` (tracking param stripped) |
-
-> Follower and post counts are a snapshot. They drift; refresh or remove rather
-> than letting them go stale.
+| Live music | 8 PM onwards (start, on every event post) |
+| Closing time | **Never published — not on the site** |
+| WhatsApp | business line, used by the booking modal's handoff |
+| Instagram | @canyonbilaspur — 32 posts (deletion-prone; see §9) |
 
 ---
 
-## 4. Information Architecture
+## 5. Information Architecture
 
-Single-page marketing site. A restaurant's reservations funnel is the whole job, and
-routing a visitor through extra pages costs bookings.
+Six pages and a 404. The reservation funnel spans all of them: sticky bar
+with Book a Table everywhere, `tel:` links, and the native-dialog booking
+form on every page.
 
 ```
-/                       all sections, one scroll
+/            the pitch: hero + info strip → nights → features → tour →
+             setups teaser → kitchen board → reserve band → strip → footer
+/nights      the three formats at poster fidelity; first-night story;
+             six-tile room grid
+/celebrate   the setups (owner's 5 photos) → the occasion formats →
+             "night to remember" plate
+/kitchen     the menu board → Jamun Passion spotlight → Tables Set pair →
+             reserve band
+/gallery     ten widened plates + quarter quote, strip close
+/visit       the ledger (address, both lines) + map → reserve band
+404          same ember panel, Go Home + Book a Table
 ```
 
-**Page sections, in order:**
-
-1. **Nav** — transparent over hero, blurs + gains a border after scroll. Mobile drawer.
-2. **Hero** — natural-height panel. Display serif greeting, two-line lede, one
-   "Reserve a table" CTA, entrance plate floating right with an overhang.
-   Three-slot info strip (Locate Us · The Nights · Reservation) + caption ticker.
-3. **Nights** — Sufi Night feature with its own poster, the other two formats as posters,
-   then the room mid-song.
-4. **Tour** — their own four-frame walk (minus the entrance, which is the hero),
-   ceiling → rooftop → table.
-5. **Kitchen** — menu board: categories + signature dishes, no invented prices.
-6. **Cocktails** — the Jamun Passion feature.
-7. **Gallery** — the remaining plates, each with one place-label, then their
-   "After the rain" line set large + Instagram link.
-8. **Events · Vatavaran** — private events and banquets promo.
-9. **Visit** — address, reservations, map, phone.
-10. **ReserveBand** — centred reservation close: one heading, modal trigger + call link.
-11. **Footer** — contact, Instagram, nav.
-
-### Conversion paths
-
-Every one of these is present and reachable on mobile without scrolling back up:
-
-- `tel:+919698421000` — primary
-- A booking modal with a name/phone/party-size form
-- WhatsApp deep link
-- Instagram link
-- A sticky mobile action bar (Call / Book) below `md`
+**Conversion paths** — reachable on mobile without scrolling back up:
+- Sticky top bar: Book a Table (modal) on every route
+- `tel:+919698421000` and `tel:+919750288888` links (strip, ledger, nights,
+  formats, reserve band)
+- WhatsApp deep link via the booking modal (blocked-popup fallback says so)
+- Instagram strip → the account
 
 ---
 
-## 5. Tailwind v4 Implementation
+## 6. Tailwind v4 Implementation
 
-CSS-first config. No `tailwind.config.js` — v4 uses `@theme` in CSS.
+CSS-first config. No `tailwind.config.js` — v4 uses `@theme` in
+`src/styles/global.css`. The live tokens (excerpt; the file is the truth):
 
 ```css
-/* src/styles/global.css */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-canyon-void: #0B0A0C;
-  --color-canyon-ember: #0F0E11;
-  --color-canyon-coal: #1A181C;
-  --color-canyon-smoke: #A8A3AD;
-  --color-canyon-champagne: #F2E9DC;
-  --color-canyon-amber: #E8A33D;
-  --color-canyon-gold: #C9922F;
-  --color-canyon-terracotta: #B4553A;
-
-  --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-canyon-void: #0a0908;
+  --color-canyon-ember: #12100e;
+  --color-canyon-coal: #1f1b16;
+  --color-canyon-smoke: #a79f94;
+  --color-canyon-champagne: #f4ede2;
+  --color-canyon-amber: #e0a13c;
+  --color-canyon-gold: #be8a2c;
+  --color-canyon-ochre: #c8912e;
+  --color-canyon-night: #17233c;
+  --color-canyon-terracotta: #b4553a;
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --radius-shell: 1.5rem;
+  --radius-core: calc(1.5rem - 0.3125rem);
+
+  --text-hero: clamp(3rem, min(8vw, 10svh), 6rem);
+  --text-title: clamp(2rem, 4.5vw, 3rem);
+  --text-heading: clamp(1.75rem, 4vw, 2.625rem);
+  --text-action: 0.8125rem;
+}
+
+@theme inline {
+  /* Astro's <Font> defines these at runtime; `inline` embeds the
+     variable instead of letting Tailwind shadow it */
+  --font-display: var(--font-canyon-display), ui-serif, Georgia, serif;
+  --font-sans: var(--font-canyon-body), ui-sans-serif, system-ui, sans-serif;
+  --font-sufi: var(--font-canyon-sufi), var(--font-canyon-display), serif;
 }
 ```
-
-`@theme` variables sit top-level, never nested under a selector. They generate
-`bg-canyon-void`, `text-canyon-amber`, `font-display`, and friends automatically.
 
 Astro wires Tailwind through the **Vite plugin**, not PostCSS:
 
 ```js
 // astro.config.mjs
-import tailwindcss from "@tailwindcss/vite";
-
-export default defineConfig({
-  vite: { plugins: [tailwindcss()] },
-});
+import tailwindcss from '@tailwindcss/vite';
+export default defineConfig({ vite: { plugins: [tailwindcss()] } });
 ```
 
 ### v4 constraints to respect
 
-- Browser support is modern-only: Safari 16.4+, Chrome 111+, Firefox 128+.
-- Class names must be **static and complete**. No
-  `` `text-${color}-500` `` — Tailwind scans source as plain text. Map over data arrays
-  with full literal class strings instead.
-- Prefers a `v4` note: `space-*`/`divide-*` changed behaviour; prefer `gap` on
-  flex/grid containers.
-- Border and ring default colours are now `currentColor`; always set an explicit colour.
-- Scoped `<style>` blocks and CSS modules need `@reference "../styles/global.css"` to
-  read theme variables.
+- Browser support is modern-only: Safari 16.4+, Chrome 111+, Firefox 128+;
+  the stylesheet uses `color-mix()`, `svh`, `@layer` freely per that stance.
+- Class names must be **static and complete** — Tailwind scans source as
+  plain text. Ratios and sizes arrive as data (`ratio: 'aspect-[4/5]'`)
+  precisely because literal strings are needed at the call site.
+- Prefer `gap` over `space-*` on flex/grid containers.
+- Border and ring default colours are `currentColor`; always set one.
+- `dialog:not([open]) { display: none }` sits **unlayered** at the bottom of
+  global.css — an element's Tailwind `flex` utility would otherwise beat the
+  UA default and render the closed booking form inline. Do not move it
+  into `@layer`.
 
 ---
 
-## 6. Accessibility Contract
+## 7. Accessibility Contract
 
 Not optional. This is the baseline.
 
-- Semantic landmarks: `header`, `nav`, `main`, `section`, `footer`.
-- One `h1`; heading levels never skip.
-- Every image has meaningful `alt`, or `alt=""` if purely decorative.
-- Visible `:focus-visible` ring on all interactive elements — amber, 2px, offset.
-- Modal: `role="dialog"`, `aria-modal`, focus trap, `Esc` to close, focus restored on close.
-- Mobile drawer: `aria-expanded` on the trigger, `Esc` to close, body scroll locked.
-- All animation behind `motion-reduce:` and `@media (prefers-reduced-motion: reduce)`.
-- Tap targets ≥ 44×44px.
-- Contrast ratios as specified in §2.
-- `prefers-reduced-transparency` gets solid backgrounds, no glassmorphism.
-
----
-
-## 7. Component Inventory
-
-| Component | Notes |
-| --- | --- |
-| `Nav.astro` | Transparent → blurred on scroll. Mobile drawer, named `Mobile` landmark. |
-| `Hero.astro` | Panel + doorway plate + info strip + ticker. Single `h1`. |
-| `Nights.astro` | Sufi feature + two poster formats + room mid-song. |
-| `Tour.astro` | Three-frame walk, alternating rows, step number + place + quoted line. |
-| `Kitchen.astro` | Menu board on ochre tint. Categories + dishes, prices via phone. |
-| `Cocktails.astro` | Jamun Passion feature + second reel frame. |
-| `Gallery.astro` | Bento of remaining plates with place-labels + large quoted line + IG link. |
-| `Events.astro` | Vatavaran private-events promo + full-house frames. |
-| `Visit.astro` | Address / reservations / events-groups cards + map embed. Hours omitted (unverified). |
-| `ReserveBand.astro` | Centred reservation close: modal trigger + call link. |
-| `Footer.astro` | Contact + nav + social. |
-| `BookingModal.astro` | Native dialog, focus trap, WhatsApp handoff. |
-| `MobileActionBar.astro` | Sticky Call / Book, `md:hidden`, hidden while dialog open. |
-| `Section.astro` | Shared section shell: eyebrow + heading + optional lede. |
-| `Photo.astro` | Double-bezel frame at the plate's own ratio; optional `arch`. |
-| `Ticker.astro` | Caption band, duplicated track, pauses on hover/focus, stops on reduced motion. |
-| `CtaPill.astro` | The shared amber booking pill. |
-| `Wordmark.astro` | Arch + palms mark. The script wordmark is never faked; it appears only in photos. |
+- Semantic landmarks: `header`, `nav`, `main`, `section`, `footer`; one
+  landmark `<h1>` per page (PageHead on subpages, the hero greeting on home).
+- Every image has meaningful `alt` (caps or artwork text included when the
+  plate is typography); decorative marks are `aria-hidden`.
+- Visible `:focus-visible` ring — amber, 2px, offset 3px — on everything
+  interactive; never suppressed (modal fields use `focus:` border, not
+  `focus-visible` suppression).
+- Nav: `aria-current="page"` on the active route; drawer button carries
+  `aria-expanded`; Esc closes; focus is trapped at document level and the
+  drawer is height-capped and contained (`overscroll-contain`).
+- Booking modal: native `<dialog>` + `showModal()` (top layer, inert
+  background), labelled by its heading, Esc closes, focus returns to the
+  trigger, first field focused on fine pointers only (coarse pointers skip
+  it, so the on-screen keyboard doesn't pop the moment the dialog opens).
+- Tap targets ≥ 44px (`strip-number` earns padding with a negative margin;
+  nav links `py-2`, drawer rows `py-3.5`).
+- Contrast per §3.
+- `prefers-reduced-motion: reduce` — reveals resolve instantly, smooth
+  scroll off, and the global killer animates everything to its final frame.
 
 ---
 
 ## 8. Open Questions
 
-1. **Opening hours** — not published anywhere public. Needed for the Visit section.
-2. **Menu with prices** — required for a real menu section.
-3. **"Vatavaran"** — is this a named events sub-brand, or a campaign? Affects whether it
-   gets its own section or just a footer mention.
-4. **Buffet** — a post from 23 Sep 2026 appears to show a buffet ("fork, buffet").
-   If Canyon runs a weekday buffet, it deserves its own section; it is currently
-   unrepresented on the site.
-5. **Photography** — no licensed site imagery exists yet. Placeholder tiles must be
-   replaced before launch.
+1. **Closing / opening hours** — never published. The site states the start
+   time only ("Live music 8 PM onwards") and says nothing about closing.
+   Needed before the Visit ledger can become a timing table.
+2. **Menu with prices** — required for a real menu page. Until then the
+   board has no prices and routes them to the phone, honestly.
 
 ### Resolved
 
-- **Floor** — the official bio says "2nd floor, Hotel Intercity International". A single
-  reel referring to "1st Floor, Intercity" was inaccurate. Site uses **2nd floor**.
-- **Maps link** — the site previously used a hand-built Google Maps query URL. It now
-  uses the short link from the bio, with the `g_st` click-tracking parameter removed.
+- **Floor** — the official bio says "2nd floor, Hotel Intercity
+  International". A single reel's "1st Floor, Intercity" was inaccurate.
+  The site uses **2nd floor**.
+- **Maps link** — site uses the short link from the bio, tracking parameter
+  stripped.
+- **"Vatavaran"** — never real. Absent from the bio and all 32 captions;
+  an interim draft used it as the occasions eyebrow and it is fully excised.
+  Anyone adding it back should be asked to find one source first.
+- **Buffet** — rumoured from a misread post (23 Sep); no caption or frame
+  evidence exists. Not represented on the site.
+- **Imagery licensing** — resolved: every plate is the venue's own
+  photography (the account, two deleted posts preserved as `legacy-posts`,
+  and five setup photographs supplied by the venue for the site).
+- **Deleted posts** — the account prunes continuously (32-post ceiling; two
+  posts vanished across two same-day scrapes). Shown plates from deleted
+  posts live in `data/legacy-posts.json`; see §9.
+- **Faces of guests** — several frames show identifiable guests; owner
+  confirmation (or blurred crops) is still owed before commercial use.
+
+---
+
+## 9. Data Layer & Pipeline
+
+```
+src/data/site.ts      every copy line + pages meta; provenance tags inline
+src/data/frames.ts    the plate ledger; every frame placement, tagged
+src/data/setups.ts    the five owner-shot celebration photos (+ echo ⏏ rule)
+src/data/media.ts     GENERATED by scripts/download-media.mjs — never edit
+data/instagram.json   the live scrape (scripts/scrape-profile.mjs <limit>)
+data/legacy-posts.json captions of posts the account has since deleted
+public/og.jpg         the social card (entrance sign)
+```
+
+- **IG pipeline:** scrape → `download-media.mjs` → `src/data/media.ts`
+  (`Shot = { shortCode, type, likes, alt, img0.. }`; `frameOf(code, n)` is
+  img0-based). Posts deleted between scrapes must be appended to
+  `legacy-posts.json` **before** re-running the media script, which keeps
+  their files on disk and fails loudly on any `archive.invalid/*` URL.
+- **Once-per-page rule:** a plate may appear on any number of distinct
+  pages, but no plate repeats within a page (the strip/handoffs included),
+  except the three ⏏ echo plates that the home teaser borrows from
+  /celebrate by design.
+- **Frame discipline:** the frame is declared at the plate's own ratio;
+  `position: top` is reserved for the one documented watermark crop.
+
+---
+
+## 10. Component Inventory
+
+| Component | Notes |
+| --- | --- |
+| `Nav.astro` | Sticky on all pages, glass after 8px scroll, active-route ink, mobile drawer (document-level trap, containment). |
+| `Hero.astro` | Ember panel + arch doorway plate + three-slot info strip; one-time entrance; single `h1`. |
+| `PageHead.astro` | Subpage opener (eyebrow / `page-title` h1 / lede) on the shared ember light; decorative arch mark ≤6% behind, hidden <lg. |
+| `Nights.astro` | Poster-first sections; `full` prop (home vs /nights); first-night story on full. |
+| `Features.astro` | Four cards off the reference's slot: live music, kitchen, drinks, rooftop — every line traced to its data. |
+| `Tour.astro` | Their walk minus its first frame; frames' own headlines are the copy (step number + place + quoted line). |
+| `CelebrateTeaser.astro` | Three ⏏ echo plates + hand-off to /celebrate; resTel route. |
+| `Setups.astro` | The five owner photos with occasion labels; per-plate spans. |
+| `Kitchen.astro` | Menu board on ochre tint; categories + dishes routed to a phone call for prices. |
+| `Gallery.astro` | Ten widened plates, one place-label each, `intro` prop; quarter quote after the rain. |
+| `InstagramStrip.astro` | Closing social strip (moon / tablesSet / rooftop), shared across pages. |
+| `Visit.astro` | The ruled ledger (address, two numbers) + map embed; `intro` prop. |
+| `ReserveBand.astro` | Centred reservation close: modal trigger + call link. |
+| `Footer.astro` | Routes, contact, timing, maps + IG, credit line. |
+| `BookingModal.astro` | Native dialog, top-layer animations, Indian-mobile pattern, IST-safe date window, WhatsApp handoff with blocked-popup fallback. |
+| `Section.astro` | Shared section shell: eyebrow + heading + optional lede. |
+| `Photo.astro` | Double-bezel frame at the plate's own ratio; `position` named-edge exception only; `sizes` per placement. |
+| `CtaPill.astro` | The shared amber booking button, two variants, one hook. |
+| `CanyonMark.astro` | Contour-traced arch-and-palms mark, token ink, sizing in global.css so `set:html` nodes size correctly. |

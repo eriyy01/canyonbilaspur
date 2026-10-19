@@ -1,35 +1,33 @@
 ---
 import CtaPill from './CtaPill.astro';
-import { business, contact, cta } from '../data/site';
+import { contact, cta, reserveBand } from '../data/site';
 
 /*
-	A short reservation band between Visit and the footer.
+	A short reservation band before the footer.
 
 	The reference site closes its pitch with a dedicated reservation block
-	("Secure your spot…", Book a Table + Get in touch), and this page had no
+	("Secure your spot…", Book a Table + Get in touch), and the page had no
 	equivalent — the booking intent was scattered across section CTAs. One
 	centred band, one decision, both paths: the modal trigger and the phone
 	number Canyon actually publishes.
 
-	Copy is facts only: the start time off `business.eventStart`, the booking
-	line off `contact`. The secondary link finally uses `cta.heroAlt`, which
-	has been dead data since the hero restructure.
+	The h2 and the line come off `reserveBand` in src/data/site.ts, so the
+	band cannot drift from the identity block.
 */
 ---
 
 <section class="bg-canyon-ember/40 py-12 md:py-16" aria-labelledby="reserve-heading">
 	<div class="shell flex flex-col items-center text-center">
-		<p class="eyebrow text-body" data-reveal>Reservation</p>
+		<p class="eyebrow text-body" data-reveal>{reserveBand.eyebrow}</p>
 		<h2
 			id="reserve-heading"
 			class="mt-4 max-w-xl font-display text-heading leading-[1.04] tracking-[-0.02em] text-balance text-canyon-champagne"
 			data-reveal
 		>
-			Tables fill first on music nights.
+			{reserveBand.heading}
 		</h2>
 		<p class="mt-4 max-w-md text-lede leading-relaxed text-canyon-champagne" data-reveal>
-			Live music {business.eventStart}. Tell us the night and we will hold the
-			table.
+			{reserveBand.line}
 		</p>
 		<div class="mt-8 flex flex-col items-center gap-3 sm:flex-row" data-reveal>
 			<CtaPill label={cta.hero} />
